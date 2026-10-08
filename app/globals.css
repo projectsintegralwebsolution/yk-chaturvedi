@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-navy: #0a192f;
+  --secondary-gold: #c5a046;
+  --accent-blue: #1c3d6e;
+  --bg-light: #fcfcfd;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  
+  body {
+    @apply bg-[#FCFCFD] text-slate-800 antialiased selection:bg-gold-500 selection:text-white font-sans;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-navy-950 font-bold tracking-tight;
+  }
+}
+
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Glassmorphism and subtle gradients */
+.glass-nav {
+  background: rgba(10, 25, 47, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #dfc278 0%, #c5a046 50%, #997424 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border-gradient {
+  border-image: linear-gradient(to right, #c5a046, #e8cf8c, #c5a046) 1;
+}
+
+.gold-gradient-bg {
+  background: linear-gradient(135deg, #c5a046 0%, #d8b663 50%, #b38b30 100%);
+}
+
+.navy-gradient-bg {
+  background: linear-gradient(145deg, #060d17 0%, #0a192f 60%, #132b4f 100%);
+}
+
+.navy-card-gradient {
+  background: linear-gradient(160deg, #0d203c 0%, #0a192f 100%);
+}
+
+/* Interactive transitions */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
