@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { syncBlogsToJsonFile } from "@/lib/jsonSync";
 
 interface Params {
   params: {
@@ -48,6 +49,7 @@ export async function PUT(request: Request, { params }: Params) {
       metaTitle,
       metaDescription,
       focusKeyword,
+      keywords,
       canonicalUrl,
     } = data;
 
@@ -79,9 +81,13 @@ export async function PUT(request: Request, { params }: Params) {
         ...(metaTitle !== undefined && { metaTitle }),
         ...(metaDescription !== undefined && { metaDescription }),
         ...(focusKeyword !== undefined && { focusKeyword }),
+        ...(keywords !== undefined && { keywords }),
         ...(canonicalUrl !== undefined && { canonicalUrl }),
       },
     });
+
+    // Auto-sync JSON backup
+    await syncBlogsToJsonFile();
 
     return NextResponse.json({ success: true, blog: updatedBlog });
   } catch (error: any) {
@@ -101,6 +107,9 @@ export async function DELETE(request: Request, { params }: Params) {
     await prisma.blog.delete({
       where: { id: params.id },
     });
+
+    // Auto-sync JSON backup
+    await syncBlogsToJsonFile();
 
     return NextResponse.json({ success: true, message: "Blog deleted successfully" });
   } catch (error) {

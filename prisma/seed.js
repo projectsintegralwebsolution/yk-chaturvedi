@@ -38,6 +38,7 @@ async function main() {
     metaDescription:
       "Educational guidance by CA Saurabh Bhutada on maintaining statutory GST records, preventing ITC mismatches, and preparing for departmental audits.",
     focusKeyword: "GST compliance record keeping",
+    keywords: "GST compliance, GST record keeping, ITC reconciliation, GSTR-2B, CA in Vasai, Section 35 CGST",
     content: `
 <h2>Introduction: The Foundation of Indirect Tax Compliance</h2>
 <p>Under the Goods and Services Tax (GST) framework in India, compliance is fundamentally driven by automated digital data matching. Every tax invoice issued, input tax credit (ITC) claimed, and return filed is continuously benchmarked across interconnected government databases.</p>
@@ -69,27 +70,6 @@ async function main() {
 <h3>3. Seamless Defense in Departmental Scrutiny and Audits</h3>
 <p>When the GST department initiates scrutiny under Section 61 or a departmental audit under Section 65, well-indexed physical and digital documentation allows prompt, authoritative written responses (Form ASMT-11) without stressful emergency reconciliations.</p>
 
-<h2>Common Mistakes Businesses Should Avoid</h2>
-<p>During our practice across Maharashtra and the Mumbai Metropolitan Region, our indirect tax desk frequently identifies the following preventable errors:</p>
-<ul>
-  <li><strong>Postponing Reconciliations to Annual Filing:</strong> Waiting until GSTR-9/9C deadline leaves no window to rectify supplier defaults within statutory limitation periods (Section 16(4)).</li>
-  <li><strong>Non-Compliance with the 180-Day Rule:</strong> Failing to reverse ITC along with interest when supplier invoices remain unpaid beyond 180 days under the second proviso to Section 16(2).</li>
-  <li><strong>Incorrect Place of Supply Tagging:</strong> Treating inter-state supply as intra-state or vice-versa, resulting in dual tax deposits and protracted refund applications.</li>
-  <li><strong>Failure to Retain Records for the Prescribed Period:</strong> Section 36 mandates that books of accounts and records must be retained for at least 72 months (6 years) from the due date of furnishing the annual return for that financial year.</li>
-</ul>
-
-<h2>Practical Monthly GST Checklist for Businesses</h2>
-<p>Incorporate the following 7 checkpoints into your monthly finance workflow:</p>
-<ol>
-  <li>Reconcile purchase ledger with auto-drafted GSTR-2B before filing Form GSTR-3B.</li>
-  <li>Verify that all B2B sales invoices have generated IRN if the enterprise exceeds turnover thresholds.</li>
-  <li>Ensure all e-way bills generated have matching outward supply invoice details.</li>
-  <li>Review debtor and creditor ageing to flag any vendor payments approaching 180 days.</li>
-  <li>Check reverse charge liabilities on legal fees, freight, and unregistered purchases.</li>
-  <li>Validate sequential numbering of tax invoices, credit notes, and delivery challans.</li>
-  <li>Archive monthly return JSON files, filing acknowledgements, and payment challans.</li>
-</ol>
-
 <h2>Conclusion: Cultivating a Compliance-First Business Culture</h2>
 <p>Timely record-keeping is not an administrative burden—it is the cornerstone of a financially resilient enterprise. By establishing disciplined internal review routines and leveraging modern cloud accounting tools, businesses protect their bottom line, enhance vendor trust, and operate with complete legal certainty.</p>
 
@@ -98,13 +78,94 @@ At <strong>Y K Chaturvedi & Co.</strong>, our indirect tax practice—led by Par
     `,
   };
 
-  const blog = await prisma.blog.upsert({
-    where: { slug: sampleBlog.slug },
-    update: sampleBlog,
-    create: sampleBlog,
-  });
+  const blog2 = {
+    title: "Tax Audit Under Section 44AB: Applicability, Limits & Key Forms",
+    slug: "tax-audit-section-44ab-applicability-limits-forms",
+    category: "Audit & Assurance",
+    author: "CA Saurabh Bhutada",
+    excerpt:
+      "A complete guide to Section 44AB tax audit applicability, turnover thresholds for digital versus non-digital transactions, Form 3CA-3CD vs 3CB-3CD, and penalties for delayed filing.",
+    featuredImage:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop",
+    status: "Published",
+    publishedAt: new Date("2026-10-04T09:30:00.000Z"),
+    metaTitle: "Tax Audit Under Section 44AB: Limits & Compliance | Y K Chaturvedi & Co.",
+    metaDescription:
+      "Statutory breakdown of Section 44AB tax audit applicability thresholds, ₹10 Crore digital transaction limit, Form 3CD reporting, and filing deadlines by Y K Chaturvedi & Co.",
+    focusKeyword: "Section 44AB tax audit",
+    keywords: "tax audit, Section 44AB, Form 3CD, tax audit turnover limit, chartered accountants Vasai, income tax audit",
+    content: `
+<h2>Understanding Statutory Tax Audits Under Section 44AB</h2>
+<p>Section 44AB of the Income Tax Act, 1961 mandates that certain categories of taxpayers carrying on business or profession must have their accounts audited by a practising Chartered Accountant. The core intent of this statutory requirement is to ensure precise computation of taxable income, verify claims for deductions, and prevent tax evasion.</p>
 
-  console.log("Sample blog created/verified:", blog.title);
+<h2>Turnover Thresholds: Business vs. Profession</h2>
+<p>Under current income tax provisions, the turnover limits for audit applicability stand as follows:</p>
+<ul>
+  <li><strong>Businesses with Cash Transactions:</strong> Mandatory tax audit applies if gross receipts or turnover exceeds ₹1 Crore during the previous year.</li>
+  <li><strong>Businesses with High Digital Transactions:</strong> The threshold limit is elevated to ₹10 Crore, provided that aggregate cash receipts and aggregate cash payments do not exceed 5% of total turnover and expenditure respectively.</li>
+  <li><strong>Professionals:</strong> Mandatory tax audit applies if gross professional receipts exceed ₹50 Lakhs in the financial year.</li>
+  <li><strong>Presumptive Taxation Schemes (Section 44AD / 44ADA):</strong> If an assessee declares profits lower than the prescribed deemed percentage and total income exceeds the basic exemption limit.</li>
+</ul>
+
+<h2>Key Audit Reports: Form 3CA vs Form 3CB</h2>
+<p>The Chartered Accountant furnishes the audit report online via the Income Tax e-Filing portal in one of two prescribed formats:</p>
+<ul>
+  <li><strong>Form 3CA - 3CD:</strong> Used for taxpayers whose accounts are already required to be audited under any other law (such as companies audited under the Companies Act, 2013).</li>
+  <li><strong>Form 3CB - 3CD:</strong> Used for individuals, firms, and sole proprietorships where audit is mandatory solely under Section 44AB of the Income Tax Act.</li>
+  <li><strong>Form 3CD Statement of Particulars:</strong> A comprehensive 44-clause statement disclosing statutory details, depreciation schedules, related-party payments under Section 40A(2)(b), and TDS compliance.</li>
+</ul>
+
+<h2>Consequences of Non-Filing or Delayed Filing</h2>
+<p>Under Section 271B, failure to obtain and submit the audit report by the statutory due date (30th September of the assessment year) attracts a penalty equal to 0.5% of total sales or turnover, subject to a statutory ceiling of ₹1,50,000.</p>
+    `,
+  };
+
+  const blog3 = {
+    title: "Company Incorporation in Maharashtra: SPICe+ Workflow & Post-Setup Checklist",
+    slug: "company-incorporation-maharashtra-spice-plus-workflow",
+    category: "Business Setup",
+    author: "CA Saurabh Bhutada",
+    excerpt:
+      "Step-by-step statutory process for incorporating a Private Limited Company in Maharashtra via the MCA V3 SPICe+ portal, including RUN name reservation, AGILE-PRO-S, and 180-day INC-20A compliance.",
+    featuredImage:
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200&auto=format&fit=crop",
+    status: "Published",
+    publishedAt: new Date("2026-10-07T11:00:00.000Z"),
+    metaTitle: "Company Incorporation in Maharashtra: SPICe+ Guide | Y K Chaturvedi & Co.",
+    metaDescription:
+      "Step-by-step CA guide on incorporating Private Limited Companies in Maharashtra, MCA V3 filings, Director DIN, PAN, TAN, GSTIN, and post-incorporation INC-20A rules.",
+    focusKeyword: "company incorporation Maharashtra",
+    keywords: "company incorporation, MCA V3, SPICe plus, private limited company, business setup Vasai, INC 20A compliance",
+    content: `
+<h2>Starting a Corporate Enterprise in Maharashtra</h2>
+<p>Maharashtra remains India's premier commercial hub, attracting entrepreneurs across manufacturing, financial technology, trade, and IT services. Registering a Private Limited Company provides limited liability protection, enhanced institutional credibility, and seamless capital-raising capabilities.</p>
+
+<h2>The Integrated SPICe+ Filing Procedure (MCA V3)</h2>
+<p>The Ministry of Corporate Affairs (MCA) has streamlined incorporation into a single integrated digital workflow:</p>
+<ol>
+  <li><strong>Part A (RUN - Reserve Unique Name):</strong> Application for name reservation of the proposed company, valid for 20 days upon approval.</li>
+  <li><strong>Part B (Integrated Incorporation):</strong> Joint submission of Memorandum of Association (e-MOA Form INC-33), Articles of Association (e-AOA Form INC-34), and Director Identification Numbers (DIN).</li>
+  <li><strong>AGILE-PRO-S Linked Registrations:</strong> Simultaneous automatic allotment of Company PAN, TAN, GSTIN, EPFO, ESIC, and Professional Tax Registration (mandatory for Maharashtra).</li>
+</ol>
+
+<h2>Critical Post-Incorporation Compliance (180-Day Rule)</h2>
+<p>Incorporation is merely the starting point. Directors must execute the following statutory obligations immediately after receiving the Certificate of Incorporation (COI):</p>
+<ul>
+  <li><strong>Deposit of Share Capital:</strong> Shareholders must deposit their subscribed capital into the newly opened corporate current bank account.</li>
+  <li><strong>Form INC-20A (Commencement of Business):</strong> Mandatory declaration filed within 180 days of incorporation with proof of capital credit. Failure to file incurs heavy daily penalties and de-registration risks.</li>
+  <li><strong>Appointment of First Statutory Auditor (Form ADT-1):</strong> The Board must appoint a Chartered Accountant within 30 days of incorporation under Section 139(6).</li>
+</ul>
+    `,
+  };
+
+  for (const b of [sampleBlog, blog2, blog3]) {
+    await prisma.blog.upsert({
+      where: { slug: b.slug },
+      update: b,
+      create: b,
+    });
+    console.log("Seeded blog:", b.title);
+  }
 }
 
 main()

@@ -37,7 +37,10 @@ export async function generateMetadata({
   const blog = await prisma.blog.findFirst({
     where: {
       slug: params.slug,
-      status: "Published",
+      OR: [
+        { status: "Published", publishedAt: { lte: new Date() } },
+        { status: "Scheduled", publishedAt: { lte: new Date() } },
+      ],
     },
   });
 
@@ -52,18 +55,22 @@ export async function generateMetadata({
   const metaDescription =
     blog.metaDescription || blog.excerpt.slice(0, 160);
 
+  const seoKeywords = [blog.focusKeyword, blog.keywords]
+    .filter(Boolean)
+    .join(", ");
+
   return {
     title: metaTitle,
     description: metaDescription,
-    keywords: blog.focusKeyword || undefined,
+    keywords: seoKeywords || undefined,
     alternates: {
-      canonical: blog.canonicalUrl || `https://ykcca.com/blog/${blog.slug}`,
+      canonical: blog.canonicalUrl || `https://ykchaturvedi.com/blog/${blog.slug}`,
     },
     openGraph: {
       title: metaTitle,
       description: metaDescription,
       type: "article",
-      url: `https://ykcca.com/blog/${blog.slug}`,
+      url: `https://ykchaturvedi.com/blog/${blog.slug}`,
       images: [
         {
           url: blog.featuredImage,
@@ -91,7 +98,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const blog = await prisma.blog.findFirst({
     where: {
       slug: params.slug,
-      status: "Published",
+      OR: [
+        { status: "Published", publishedAt: { lte: new Date() } },
+        { status: "Scheduled", publishedAt: { lte: new Date() } },
+      ],
     },
   });
 
@@ -99,10 +109,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  const liveCondition = {
+    OR: [
+      { status: "Published", publishedAt: { lte: new Date() } },
+      { status: "Scheduled", publishedAt: { lte: new Date() } },
+    ],
+  };
+
   // Fetch related blogs in same category (excluding current), max 3
   let relatedBlogs = await prisma.blog.findMany({
     where: {
-      status: "Published",
+      ...liveCondition,
       category: blog.category,
       id: { not: blog.id },
     },
@@ -114,7 +131,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (relatedBlogs.length < 3) {
     const additional = await prisma.blog.findMany({
       where: {
-        status: "Published",
+        ...liveCondition,
         id: {
           notIn: [blog.id, ...relatedBlogs.map((r) => r.id)],
         },
@@ -239,7 +256,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Main Article Content (8 cols) */}
           <main className="lg:col-span-8">
-            <article className="bg-white rounded-3xl p-6 sm:p-10 md:p-12 shadow-sm border border-slate-200">
+            <article className="bg-white rounded-3xl p-6 sm:p-10 md:p-12 shadow-sm border border-slate-200 overflow-hidden break-words [overflow-wrap:anywhere]">
               {/* Meta Info Header */}
               <div className="pb-8 mb-8 border-b border-slate-100 space-y-4">
                 <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
@@ -257,7 +274,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   </span>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black text-navy-950 tracking-tight leading-tight">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black text-navy-950 tracking-tight leading-tight break-words [overflow-wrap:anywhere]">
                   {blog.title}
                 </h1>
 
@@ -288,14 +305,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
               {/* Lead Excerpt */}
               {blog.excerpt && (
-                <div className="p-5 sm:p-6 mb-8 rounded-2xl bg-gold-50/60 border-l-4 border-gold-500 text-slate-800 text-base sm:text-lg font-medium leading-relaxed">
+                <div className="p-5 sm:p-6 mb-8 rounded-2xl bg-gold-50/60 border-l-4 border-gold-500 text-slate-800 text-base sm:text-lg font-medium leading-relaxed break-words [overflow-wrap:anywhere]">
                   {blog.excerpt}
                 </div>
               )}
 
-              {/* Rendered HTML Content with professional corporate styling */}
+              {/* Rendered HTML Content with professional corporate styling and all 6 headings */}
               <div
-                className="article-content space-y-6 text-slate-700 text-base sm:text-lg leading-relaxed [&_h2]:text-2xl [&_h2]:sm:text-3xl [&_h2]:font-bold [&_h2]:text-navy-950 [&_h2]:font-serif [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:pt-4 [&_h2]:border-t [&_h2]:border-slate-100 [&_h3]:text-xl [&_h3]:sm:text-2xl [&_h3]:font-bold [&_h3]:text-navy-900 [&_h3]:mt-8 [&_h3]:mb-3 [&_p]:text-slate-700 [&_p]:leading-relaxed [&_p]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2.5 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2.5 [&_ol]:mb-6 [&_li]:text-slate-700 [&_blockquote]:border-l-4 [&_blockquote]:border-navy-950 [&_blockquote]:bg-slate-50 [&_blockquote]:py-3 [&_blockquote]:px-5 [&_blockquote]:italic [&_blockquote]:rounded-r-xl [&_blockquote]:my-6 [&_blockquote]:text-navy-950 [&_a]:text-gold-600 [&_a]:underline [&_a]:font-semibold hover:[&_a]:text-navy-950 [&_table]:w-full [&_table]:border-collapse [&_table]:my-6 [&_table]:text-sm [&_th]:bg-navy-950 [&_th]:text-white [&_th]:p-3 [&_th]:text-left [&_th]:font-semibold [&_td]:border [&_td]:border-slate-200 [&_td]:p-3 [&_tr:nth-child(even)]:bg-slate-50"
+                className="article-content space-y-6 text-slate-700 text-base sm:text-lg leading-relaxed break-words [overflow-wrap:anywhere] [word-break:break-word] overflow-hidden [&_h1]:text-3xl [&_h1]:sm:text-4xl [&_h1]:font-black [&_h1]:text-navy-950 [&_h1]:mt-10 [&_h1]:mb-4 [&_h2]:text-2xl [&_h2]:sm:text-3xl [&_h2]:font-bold [&_h2]:text-navy-950 [&_h2]:font-serif [&_h2]:mt-9 [&_h2]:mb-4 [&_h2]:pt-4 [&_h2]:border-t [&_h2]:border-slate-100 [&_h3]:text-xl [&_h3]:sm:text-2xl [&_h3]:font-bold [&_h3]:text-navy-900 [&_h3]:mt-7 [&_h3]:mb-3 [&_h4]:text-lg [&_h4]:sm:text-xl [&_h4]:font-bold [&_h4]:text-navy-900 [&_h4]:mt-6 [&_h4]:mb-2.5 [&_h5]:text-base [&_h5]:sm:text-lg [&_h5]:font-bold [&_h5]:text-navy-900 [&_h5]:mt-5 [&_h5]:mb-2 [&_h6]:text-sm [&_h6]:sm:text-base [&_h6]:font-bold [&_h6]:text-slate-800 [&_h6]:mt-4 [&_h6]:mb-1.5 [&_p]:text-slate-700 [&_p]:leading-relaxed [&_p]:mb-5 [&_p]:break-words [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2.5 [&_ul]:mb-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-2.5 [&_ol]:mb-6 [&_li]:text-slate-700 [&_blockquote]:border-l-4 [&_blockquote]:border-navy-950 [&_blockquote]:bg-slate-50 [&_blockquote]:py-3 [&_blockquote]:px-5 [&_blockquote]:italic [&_blockquote]:rounded-r-xl [&_blockquote]:my-6 [&_blockquote]:text-navy-950 [&_a]:text-gold-600 [&_a]:underline [&_a]:font-semibold hover:[&_a]:text-navy-950 [&_table]:w-full [&_table]:border-collapse [&_table]:my-6 [&_table]:text-sm [&_th]:bg-navy-950 [&_th]:text-white [&_th]:p-3 [&_th]:text-left [&_th]:font-semibold [&_td]:border [&_td]:border-slate-200 [&_td]:p-3 [&_tr:nth-child(even)]:bg-slate-50 [&_img]:max-w-full [&_img]:h-auto"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
               />
 

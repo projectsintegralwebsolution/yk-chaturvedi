@@ -18,23 +18,55 @@ import { StatisticsSection } from "@/components/StatisticsSection";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { CTASection } from "@/components/CTASection";
 import { firmData } from "@/data/firmData";
+import { getPageBySlug } from "@/lib/getPageContent";
 
-export const metadata: Metadata = {
-  title: "About Us | Professional Expertise & Credentials",
-  description:
-    "Learn about Y K Chaturvedi & Co., Chartered Accountants (FRN: 145633W, GSTIN: 27AACFY3275B1Z9). Established in September 2017, serving 800+ tax and 250+ GST clients under direct partner supervision from two Vasai offices.",
-};
+export const dynamic = "force-dynamic";
 
-export default function AboutPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("about");
+  return {
+    title: page?.metaTitle || "About Us | Professional Expertise & Credentials",
+    description:
+      page?.metaDescription ||
+      "Learn about Y K Chaturvedi & Co., Chartered Accountants (FRN: 145633W, GSTIN: 27AACFY3275B1Z9). Established in September 2017, serving 800+ tax and 250+ GST clients under direct partner supervision from two Vasai offices.",
+    alternates: {
+      canonical: page?.canonicalUrl || "https://ykcassociates.in/about",
+    },
+    openGraph: {
+      title: page?.metaTitle || "About Us | Y K Chaturvedi & Co.",
+      description: page?.metaDescription || undefined,
+      images: page?.bannerImage ? [{ url: page.bannerImage }] : undefined,
+    },
+  };
+}
+
+export default async function AboutPage() {
+  const page = await getPageBySlug("about");
+
+  const bannerTitle = page?.bannerTitle || page?.title || "About Y K Chaturvedi & Co.";
+  const bannerSubtitle =
+    page?.bannerSubtitle ||
+    "Professional expertise built on experience, statutory rigor, and a dedicated partner-led service approach.";
+  const bannerBadge = page?.bannerBadge || "ICAI Registered CA Partnership Firm";
+  const bannerImage =
+    page?.bannerImage ||
+    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop";
+
+  const introHeadline =
+    page?.introHeadline || "Partner-Led Chartered Accountancy & Business Advisory";
+  const introText =
+    page?.introText ||
+    "Y K Chaturvedi & Co. is a partnership firm of Chartered Accountants registered with the Institute of Chartered Accountants of India (ICAI), established on 02 September 2017 and practising from two strategically located offices in Vasai, Dist. Palghar.";
+
   return (
     <div>
       {/* 1. Inner Page Banner */}
       <PageBanner
-        title="About Y K Chaturvedi & Co."
-        subtitle="Professional expertise built on experience, statutory rigor, and a dedicated partner-led service approach."
+        title={bannerTitle}
+        subtitle={bannerSubtitle}
         breadcrumbs={[{ label: "About Us" }]}
-        bgImage="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop"
-        badge="ICAI Registered CA Partnership Firm"
+        bgImage={bannerImage}
+        badge={bannerBadge}
       />
 
       {/* 2. Key Stats in Practice */}
@@ -52,16 +84,20 @@ export default function AboutPage() {
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-heading font-black text-navy-950 tracking-tight">
-                Partner-Led Chartered Accountancy & Business Advisory
+                {introHeadline}
               </h2>
 
-              <p className="text-base text-slate-700 leading-relaxed">
-                <strong>Y K Chaturvedi & Co.</strong> is a partnership firm of Chartered Accountants registered with the Institute of Chartered Accountants of India (ICAI), established on <strong>02 September 2017</strong> and practising from two strategically located offices in Vasai, Dist. Palghar.
+              <p className="text-base text-slate-700 leading-relaxed font-medium">
+                {introText}
               </p>
 
-              <p className="text-sm text-slate-600 leading-relaxed">
-                The firm serves corporates, LLPs, partnership firms, MSMEs, trusts, societies, and individuals across audit, taxation, certification, regulatory compliance, business setup, and strategic financial advisory—under direct partner supervision. Its established client base includes more than <strong>250 GST clients</strong> and more than <strong>800 Income-tax clients</strong>.
-              </p>
+              {/* Dynamic Rich Article Content (Rendered if edited from admin) */}
+              {page?.content && (
+                <div
+                  className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-4 break-words [overflow-wrap:anywhere] [word-break:break-word]"
+                  dangerouslySetInnerHTML={{ __html: page.content }}
+                />
+              )}
 
               {/* ICAI & Regulatory Credential Box */}
               <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200/80 space-y-4">
@@ -71,7 +107,7 @@ export default function AboutPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   <div>
                     <span className="text-slate-500 block">Name of the Firm:</span>
-                    <span className="font-semibold text-navy-950">Y K Chaturvedi & Co., Chartered Accountants</span>
+                    <span className="font-semibold text-navy-950">Y K Chaturvedi &amp; Co., Chartered Accountants</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block">Constitution:</span>
@@ -110,7 +146,7 @@ export default function AboutPage() {
                   The Value of Direct Partner Supervision
                 </h3>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  Unlike conventional firms where corporate matters are frequently delegated to inexperienced staff, every client assignment at Y K Chaturvedi & Co. is directly reviewed and supervised by a partner. This ensures that legal documents, audit reports, tax representations, and financial forecasts benefit from senior strategic oversight and technical precision.
+                  Unlike conventional firms where corporate matters are frequently delegated to inexperienced staff, every client assignment at Y K Chaturvedi &amp; Co. is directly reviewed and supervised by a partner. This ensures that legal documents, audit reports, tax representations, and financial forecasts benefit from senior strategic oversight and technical precision.
                 </p>
               </div>
             </div>
@@ -152,7 +188,7 @@ export default function AboutPage() {
                   <span>Technology-Enabled Architecture</span>
                 </div>
                 <h4 className="text-lg font-heading font-bold text-navy-950">
-                  Modern Compliance & Cloud Accounting
+                  Modern Compliance &amp; Cloud Accounting
                 </h4>
                 <p className="text-xs text-slate-600 leading-relaxed">
                   We leverage advanced government tax portals, cloud accounting infrastructure, automated ITC reconciliation algorithms, and digital signature workflows to maintain accuracy and prevent statutory deadline defaults.
@@ -169,7 +205,7 @@ export default function AboutPage() {
       {/* 5. CTA Section */}
       <CTASection
         title="Experience the Confidence of Partner-Led Guidance"
-        subtitle="Connect with CA Yogesh Kumar Chaturvedi & CA Saurabh Bhutada for an initial confidential discussion regarding your audit, tax, or business setup requirements."
+        subtitle="Connect with CA Yogesh Kumar Chaturvedi &amp; CA Saurabh Bhutada for an initial confidential discussion regarding your audit, tax, or business setup requirements."
       />
     </div>
   );

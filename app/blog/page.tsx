@@ -24,7 +24,10 @@ export default async function BlogListingPage() {
   const [blogs, categories] = await Promise.all([
     prisma.blog.findMany({
       where: {
-        status: "Published",
+        OR: [
+          { status: "Published", publishedAt: { lte: new Date() } },
+          { status: "Scheduled", publishedAt: { lte: new Date() } },
+        ],
       },
       orderBy: {
         publishedAt: "desc",

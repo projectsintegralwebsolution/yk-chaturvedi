@@ -30,7 +30,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let blogRoutes: MetadataRoute.Sitemap = [];
   try {
     const publishedBlogs = await prisma.blog.findMany({
-      where: { status: "Published" },
+      where: {
+        OR: [
+          { status: "Published", publishedAt: { lte: new Date() } },
+          { status: "Scheduled", publishedAt: { lte: new Date() } },
+        ],
+      },
       select: { slug: true, updatedAt: true },
     });
 
@@ -44,5 +49,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Failed to fetch blogs for sitemap:", err);
   }
 
-  return [...staticRoutes, ...serviceRoutes, ...blogRoutes];
+  // Include any custom published pages
+  let customPageRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const customPages = await prisma.page.findMany({
+      where: {
+        status: "Published",
+        category: "Custom Page",
+      },
+      select: { path: true, updatedAt: true },
+    });
+
+    customPageRoutes = customPages.map((p) => ({
+      url: `${baseUrl}${p.path}`,
+      lastModified: new Date(p.updatedAt),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+  } catch (err) {
+    console.error("Failed to fetch custom pages for sitemap:", err);
+  }
+
+  return [...staticRoutes, ...serviceRoutes, ...customPageRoutes, ...blogRoutes];
 }

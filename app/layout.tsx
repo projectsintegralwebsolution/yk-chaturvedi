@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter, Merriweather } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -9,18 +8,6 @@ import { ConsultationModal } from "@/components/ConsultationModal";
 import { ModalProvider } from "@/components/ModalContext";
 import { firmData } from "@/data/firmData";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const merriweather = Merriweather({
-  weight: ["400", "700", "900"],
-  subsets: ["latin"],
-  variable: "--font-merriweather",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ykchaturvedi.com"),
@@ -104,7 +91,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${inter.variable} ${merriweather.variable}`}>
+    <html lang="en">
       <head>
         <link rel="icon" href="/images/ca-logo-mark.jpg" type="image/jpeg" />
         <script

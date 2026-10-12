@@ -6,23 +6,55 @@ import { PageBanner } from "@/components/PageBanner";
 import { ServiceCard } from "@/components/ServiceCard";
 import { CTASection } from "@/components/CTASection";
 import { servicesData } from "@/data/servicesData";
+import { getPageBySlug } from "@/lib/getPageContent";
 
-export const metadata: Metadata = {
-  title: "Services & Practice Areas | Audit, Tax, GST, ROC, Finance",
-  description:
-    "Explore the 13 comprehensive practice areas of Y K Chaturvedi & Co. Chartered Accountants, including Audit, Direct Tax, GST, Business Setup, ROC, Project Finance, and Labour Codes.",
-};
+export const dynamic = "force-dynamic";
 
-export default function ServicesPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("services");
+  return {
+    title: page?.metaTitle || "Services & Practice Areas | Audit, Tax, GST, ROC, Finance",
+    description:
+      page?.metaDescription ||
+      "Explore the 13 comprehensive practice areas of Y K Chaturvedi & Co. Chartered Accountants, including Audit, Direct Tax, GST, Business Setup, ROC, Project Finance, and Labour Codes.",
+    alternates: {
+      canonical: page?.canonicalUrl || "https://ykcassociates.in/services",
+    },
+    openGraph: {
+      title: page?.metaTitle || "Services & Practice Areas | Y K Chaturvedi & Co.",
+      description: page?.metaDescription || undefined,
+      images: page?.bannerImage ? [{ url: page.bannerImage }] : undefined,
+    },
+  };
+}
+
+export default async function ServicesPage() {
+  const page = await getPageBySlug("services");
+
+  const bannerTitle = page?.bannerTitle || page?.title || "Our Areas of Practice";
+  const bannerSubtitle =
+    page?.bannerSubtitle ||
+    "Comprehensive financial, taxation, compliance and advisory solutions delivered under direct partner supervision.";
+  const bannerBadge = page?.bannerBadge || "13 Specialized Practice Areas";
+  const bannerImage =
+    page?.bannerImage ||
+    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1920&auto=format&fit=crop";
+
+  const introHeadline =
+    page?.introHeadline || "Integrated Capabilities for Every Business Stage";
+  const introText =
+    page?.introText ||
+    "Whether you are an established corporate requiring statutory audit and cross-border FEMA advisory, an MSME navigating GST scrutiny and working capital loans, or an entrepreneur incorporating a company—our partners lead each assignment from planning to completion.";
+
   return (
     <div>
       {/* 1. Inner Page Banner */}
       <PageBanner
-        title="Our Areas of Practice"
-        subtitle="Comprehensive financial, taxation, compliance and advisory solutions delivered under direct partner supervision."
+        title={bannerTitle}
+        subtitle={bannerSubtitle}
         breadcrumbs={[{ label: "Services" }]}
-        bgImage="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1920&auto=format&fit=crop"
-        badge="13 Specialized Practice Areas"
+        bgImage={bannerImage}
+        badge={bannerBadge}
       />
 
       {/* 2. Practice Overview Introduction */}
@@ -34,12 +66,22 @@ export default function ServicesPage() {
               <span>Full-Spectrum Financial Solutions</span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-heading font-black text-navy-950 tracking-tight mb-4">
-              Integrated Capabilities for Every Business Stage
+              {introHeadline}
             </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
-              Whether you are an established corporate requiring statutory audit and cross-border FEMA advisory, an MSME navigating GST scrutiny and working capital loans, or an entrepreneur incorporating a company—our partners lead each assignment from planning to completion.
+            <p className="text-base text-slate-600 leading-relaxed font-medium">
+              {introText}
             </p>
           </div>
+
+          {/* Dynamic Rich Article Content */}
+          {page?.content && (
+            <div className="max-w-3xl mx-auto mb-16">
+              <div
+                className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-4 break-words [overflow-wrap:anywhere] [word-break:break-word]"
+                dangerouslySetInnerHTML={{ __html: page.content }}
+              />
+            </div>
+          )}
 
           {/* 13-Service Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

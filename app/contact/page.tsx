@@ -12,25 +12,55 @@ import {
 import { PageBanner } from "@/components/PageBanner";
 import { ContactForm } from "@/components/ContactForm";
 import { firmData } from "@/data/firmData";
+import { getPageBySlug } from "@/lib/getPageContent";
 
-export const metadata: Metadata = {
-  title: "Contact Us | Vasai West & Vasai East Offices",
-  description:
-    "Get in touch with Y K Chaturvedi & Co., Chartered Accountants. Head Office in Vasai West (Ambadi Road) and Branch Office in Vasai East (Infinity Square). Call +91 93221 65502 / +91 90491 02047.",
-};
+export const dynamic = "force-dynamic";
 
-export default function ContactPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("contact");
+  return {
+    title: page?.metaTitle || "Contact Us | Vasai West & Vasai East Offices",
+    description:
+      page?.metaDescription ||
+      "Get in touch with Y K Chaturvedi & Co., Chartered Accountants. Head Office in Vasai West (Ambadi Road) and Branch Office in Vasai East (Infinity Square). Call +91 93221 65502 / +91 90491 02047.",
+    alternates: {
+      canonical: page?.canonicalUrl || "https://ykcassociates.in/contact",
+    },
+    openGraph: {
+      title: page?.metaTitle || "Contact Us | Y K Chaturvedi & Co.",
+      description: page?.metaDescription || undefined,
+      images: page?.bannerImage ? [{ url: page.bannerImage }] : undefined,
+    },
+  };
+}
+
+export default async function ContactPage() {
   const cleanNumber = firmData.whatsappNumber.replace(/[^0-9]/g, "");
+  const page = await getPageBySlug("contact");
+
+  const bannerTitle = page?.bannerTitle || page?.title || "Contact Our Offices";
+  const bannerSubtitle =
+    page?.bannerSubtitle ||
+    "Let's start a conversation. Reach out to our partner-led practice across Vasai West and Vasai East.";
+  const bannerBadge = page?.bannerBadge || "Two Strategic Locations";
+  const bannerImage =
+    page?.bannerImage ||
+    "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1920&auto=format&fit=crop";
+
+  const introHeadline = page?.introHeadline || "Get in Touch with Our Team";
+  const introText =
+    page?.introText ||
+    "We welcome client visits by appointment at both our Vasai West and Vasai East premises. Feel free to contact our partners directly by phone, WhatsApp, or through the enquiry form.";
 
   return (
     <div>
       {/* 1. Inner Page Banner */}
       <PageBanner
-        title="Contact Our Offices"
-        subtitle="Let's start a conversation. Reach out to our partner-led practice across Vasai West and Vasai East."
+        title={bannerTitle}
+        subtitle={bannerSubtitle}
         breadcrumbs={[{ label: "Contact" }]}
-        bgImage="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1920&auto=format&fit=crop"
-        badge="Two Strategic Locations"
+        bgImage={bannerImage}
+        badge={bannerBadge}
       />
 
       {/* 2. Contact Information & Enquiry Form Grid */}
@@ -45,11 +75,18 @@ export default function ContactPage() {
                   <span>Direct Professional Access</span>
                 </div>
                 <h2 className="text-3xl font-heading font-black text-navy-950 tracking-tight mb-3">
-                  Get in Touch with Our Team
+                  {introHeadline}
                 </h2>
-                <p className="text-sm text-slate-600 leading-relaxed">
-                  We welcome client visits by appointment at both our Vasai West and Vasai East premises. Feel free to contact our partners directly by phone, WhatsApp, or through the enquiry form.
+                <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                  {introText}
                 </p>
+
+                {page?.content && (
+                  <div
+                    className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-3 mt-3 break-words [overflow-wrap:anywhere] [word-break:break-word]"
+                    dangerouslySetInnerHTML={{ __html: page.content }}
+                  />
+                )}
               </div>
 
               {/* Both Offices Cards */}

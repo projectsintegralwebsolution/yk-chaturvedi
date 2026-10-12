@@ -8,6 +8,7 @@ import {
   LogOut,
   ShieldCheck,
   FolderOpen,
+  Layers,
 } from "lucide-react";
 import { isAdminAuthenticated } from "@/lib/auth";
 
@@ -56,6 +57,32 @@ export default function AdminLayout({
               <LayoutDashboard className="w-4 h-4 text-gold-400" />
               <span>Dashboard</span>
             </Link>
+
+            {/* Pages Section */}
+            <div className="pt-2 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Content &amp; Pages
+            </div>
+
+            <Link
+              href="/admin/pages"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-navy-900 transition"
+            >
+              <Layers className="w-4 h-4 text-blue-400" />
+              <span>All Pages</span>
+            </Link>
+
+            <Link
+              href="/admin/pages/new"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-navy-900 transition"
+            >
+              <PlusCircle className="w-4 h-4 text-blue-400" />
+              <span>Add New Page</span>
+            </Link>
+
+            {/* Blogs Section */}
+            <div className="pt-3 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              Articles &amp; SEO
+            </div>
 
             <Link
               href="/admin/blogs"

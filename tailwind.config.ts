@@ -49,8 +49,8 @@ const config: Config = {
         }
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        heading: ["var(--font-merriweather)", "Georgia", "serif"],
+        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "sans-serif"],
+        heading: ["Merriweather", "Georgia", "serif"],
       },
       boxShadow: {
         'subtle': '0 2px 10px rgba(0, 0, 0, 0.04)',

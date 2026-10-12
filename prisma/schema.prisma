@@ -17,10 +17,11 @@ model Blog {
   category        String
   author          String   @default("CA Saurabh Bhutada")
   publishedAt     DateTime @default(now())
-  status          String   @default("Published") // "Draft" | "Published"
+  status          String   @default("Published") // "Draft" | "Published" | "Scheduled"
   metaTitle       String?
   metaDescription String?
   focusKeyword    String?
+  keywords        String?
   canonicalUrl    String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -52,4 +53,29 @@ model Enquiry {
   office    String?
   message   String
   createdAt DateTime @default(now())
+}
+
+model Page {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  path            String
+  category        String   @default("Main Page")
+  status          String   @default("Published")
+  bannerTitle     String?
+  bannerSubtitle  String?
+  bannerBadge     String?
+  bannerImage     String?
+  introHeadline   String?
+  introText       String?
+  content         String?
+  bulletPoints    String?
+  metaTitle       String?
+  metaDescription String?
+  focusKeyword    String?
+  keywords        String?
+  canonicalUrl    String?
+  customData      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

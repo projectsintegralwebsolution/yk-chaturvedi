@@ -243,14 +243,14 @@ export const BlogListClient: React.FC<BlogListClientProps> = ({
                 </div>
 
                 {/* Title */}
-                <h2 className="text-2xl sm:text-3xl font-heading font-black text-navy-950 tracking-tight leading-snug group-hover:text-[#0A5084] transition-colors">
+                <h2 className="text-2xl sm:text-3xl font-heading font-black text-navy-950 tracking-tight leading-snug group-hover:text-[#0A5084] transition-colors break-words [overflow-wrap:anywhere] [word-break:break-word]">
                   <Link href={`/blog/${featuredBlog.slug}`}>
                     {featuredBlog.title}
                   </Link>
                 </h2>
 
                 {/* Excerpt */}
-                <p className="text-slate-600 text-sm sm:text-base leading-relaxed line-clamp-3">
+                <p className="text-slate-600 text-sm sm:text-base leading-relaxed line-clamp-3 break-words [overflow-wrap:anywhere] [word-break:break-word]">
                   {featuredBlog.excerpt}
                 </p>
               </div>
@@ -331,13 +331,13 @@ export const BlogListClient: React.FC<BlogListClientProps> = ({
                       </span>
                     </div>
 
-                    <h4 className="text-lg font-heading font-bold text-navy-950 group-hover:text-[#0A5084] transition-colors leading-snug line-clamp-2">
+                    <h4 className="text-lg font-heading font-bold text-navy-950 group-hover:text-[#0A5084] transition-colors leading-snug line-clamp-2 break-words [overflow-wrap:anywhere] [word-break:break-word]">
                       <Link href={`/blog/${blog.slug}`}>
                         {blog.title}
                       </Link>
                     </h4>
 
-                    <p className="text-slate-600 text-xs sm:text-sm leading-relaxed line-clamp-3">
+                    <p className="text-slate-600 text-xs sm:text-sm leading-relaxed line-clamp-3 break-words [overflow-wrap:anywhere] [word-break:break-word]">
                       {blog.excerpt}
                     </p>
                   </div>

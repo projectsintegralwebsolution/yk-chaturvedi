@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { syncBlogsToJsonFile } from "@/lib/jsonSync";
 
 export async function GET() {
   if (!isAdminAuthenticated()) {
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
       metaTitle,
       metaDescription,
       focusKeyword,
+      keywords,
       canonicalUrl,
     } = data;
 
@@ -75,9 +77,13 @@ export async function POST(request: Request) {
         metaTitle: metaTitle || title,
         metaDescription: metaDescription || excerpt || title,
         focusKeyword: focusKeyword || "",
+        keywords: keywords || "",
         canonicalUrl: canonicalUrl || "",
       },
     });
+
+    // Auto-sync JSON backup
+    await syncBlogsToJsonFile();
 
     return NextResponse.json({ success: true, blog }, { status: 201 });
   } catch (error: any) {

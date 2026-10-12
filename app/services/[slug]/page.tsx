@@ -20,6 +20,9 @@ import { CTASection } from "@/components/CTASection";
 import { DynamicIcon } from "@/components/DynamicIcon";
 import { servicesData, ServiceDetail } from "@/data/servicesData";
 import { firmData } from "@/data/firmData";
+import { getPageBySlug } from "@/lib/getPageContent";
+
+export const dynamic = "force-dynamic";
 
 interface ServicePageProps {
   params: {
@@ -27,57 +30,67 @@ interface ServicePageProps {
   };
 }
 
-export async function generateStaticParams() {
-  return servicesData.map((service) => ({
-    slug: service.slug,
-  }));
-}
-
 export async function generateMetadata({
   params,
 }: ServicePageProps): Promise<Metadata> {
   const service = servicesData.find((s) => s.slug === params.slug);
-  if (!service) {
+  const pageOverride = await getPageBySlug(params.slug);
+
+  if (!service && !pageOverride) {
     return {
       title: "Service Not Found",
     };
   }
 
+  const title = pageOverride?.metaTitle || `${service?.title || "Service"} | CA Services in Vasai & Palghar`;
+  const desc = pageOverride?.metaDescription || `${service?.shortDesc || ""} Provided under direct partner supervision by Y K Chaturvedi & Co. Chartered Accountants (FRN: 145633W).`;
+  const img = pageOverride?.bannerImage || service?.bannerImage;
+
   return {
-    title: `${service.title} | CA Services in Vasai & Palghar`,
-    description: `${service.shortDesc} Provided under direct partner supervision by Y K Chaturvedi & Co. Chartered Accountants (FRN: 145633W).`,
+    title,
+    description: desc,
+    alternates: {
+      canonical: pageOverride?.canonicalUrl || `https://ykcassociates.in/services/${params.slug}`,
+    },
     openGraph: {
-      title: `${service.title} | Y K Chaturvedi & Co.`,
-      description: service.shortDesc,
-      images: [{ url: service.bannerImage }],
+      title: pageOverride?.metaTitle || `${service?.title} | Y K Chaturvedi & Co.`,
+      description: desc,
+      images: img ? [{ url: img }] : undefined,
     },
   };
 }
 
-export default function ServiceDetailPage({ params }: ServicePageProps) {
+export default async function ServiceDetailPage({ params }: ServicePageProps) {
   const service = servicesData.find((s) => s.slug === params.slug);
+  const pageOverride = await getPageBySlug(params.slug);
 
-  if (!service) {
+  if (!service && !pageOverride) {
     notFound();
   }
 
+  const displayTitle = pageOverride?.bannerTitle || pageOverride?.title || service?.title || "Service";
+  const displaySubtitle = pageOverride?.bannerSubtitle || service?.heroTagline || "";
+  const displayBannerImage = pageOverride?.bannerImage || service?.bannerImage || "";
+  const displayIntroHeadline = pageOverride?.introHeadline || "Overview & Scope of Practice";
+  const displayIntroText = pageOverride?.introText || service?.shortDesc || "";
+
   // Related services lookup
   const relatedServices = servicesData.filter((s) =>
-    service.relatedSlugs.includes(s.slug)
+    service?.relatedSlugs?.includes(s.slug)
   );
 
   return (
     <div>
       {/* 1. Inner Page Banner with Breadcrumb */}
       <PageBanner
-        title={service.title}
-        subtitle={service.heroTagline}
+        title={displayTitle}
+        subtitle={displaySubtitle}
         breadcrumbs={[
           { label: "Services", href: "/services" },
-          { label: service.title },
+          { label: displayTitle },
         ]}
-        bgImage={service.bannerImage}
-        badge={`Practice Area 0${service.categoryNumber}`}
+        bgImage={displayBannerImage}
+        badge={pageOverride?.bannerBadge || (service ? `Practice Area 0${service.categoryNumber}` : "Specialized Practice")}
       />
 
       {/* 2. Main Content Grid */}
@@ -93,13 +106,22 @@ export default function ServiceDetailPage({ params }: ServicePageProps) {
                   <span>Partner-Led Delivery</span>
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-heading font-black text-navy-950 tracking-tight mb-4">
-                  Overview & Scope of Practice
+                  {displayIntroHeadline}
                 </h2>
-                <p className="text-base text-slate-700 leading-relaxed">
-                  {service.shortDesc}
+                <p className="text-base text-slate-700 leading-relaxed font-medium">
+                  {displayIntroText}
                 </p>
-                <p className="text-sm text-slate-600 leading-relaxed mt-3">
-                  At <strong>Y K Chaturvedi & Co.</strong>, assignments in {service.title.toLowerCase()} are managed with strict statutory compliance, digital accuracy, and direct partner supervision to insulate your organization from regulatory non-compliance, litigation risks, and penalties.
+
+                {/* Dynamic Rich Article Content */}
+                {pageOverride?.content && (
+                  <div
+                    className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-4 mt-4 break-words [overflow-wrap:anywhere] [word-break:break-word]"
+                    dangerouslySetInnerHTML={{ __html: pageOverride.content }}
+                  />
+                )}
+
+                <p className="text-sm text-slate-600 leading-relaxed mt-4">
+                  At <strong>Y K Chaturvedi &amp; Co.</strong>, assignments in {displayTitle.toLowerCase()} are managed with strict statutory compliance, digital accuracy, and direct partner supervision to insulate your organization from regulatory non-compliance, litigation risks, and penalties.
                 </p>
               </div>
 

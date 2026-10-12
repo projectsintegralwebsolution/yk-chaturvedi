@@ -24,8 +24,55 @@ import { CTASection } from "@/components/CTASection";
 import { ContactForm } from "@/components/ContactForm";
 import { servicesData } from "@/data/servicesData";
 import { firmData } from "@/data/firmData";
+import { getPageBySlug } from "@/lib/getPageContent";
+import type { Metadata } from "next";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("home");
+  return {
+    title: page?.metaTitle || "Y K Chaturvedi & Co. | Chartered Accountants in Vasai (West & East)",
+    description:
+      page?.metaDescription ||
+      "Chartered Accountants in Vasai (FRN: 145633W) providing statutory audit, GST advisory, income tax, and business setup under direct partner supervision.",
+    alternates: {
+      canonical: page?.canonicalUrl || "https://ykcassociates.in/",
+    },
+    openGraph: {
+      title: page?.metaTitle || "Y K Chaturvedi & Co. | Chartered Accountants",
+      description: page?.metaDescription || undefined,
+      images: page?.bannerImage ? [{ url: page.bannerImage }] : undefined,
+    },
+  };
+}
+
+export default async function HomePage() {
+  const page = await getPageBySlug("home");
+
+  const introHeadline = page?.introHeadline || "Professional Expertise. Partner-Led Approach.";
+  const introText =
+    page?.introText ||
+    "Y K Chaturvedi & Co. is a partnership firm of Chartered Accountants registered with the Institute of Chartered Accountants of India (ICAI), established on 02 September 2017 and practising from two offices in Vasai, Dist. Palghar. The firm serves corporates, LLPs, partnership firms, MSMEs, trusts, societies, and individuals with comprehensive audit, taxation, certification, regulatory compliance, business setup, and advisory services—under direct partner supervision.";
+
+  let bulletPoints = [
+    "Direct Partner Supervision on Every Engagement",
+    "Registered with ICAI (FRN: 145633W)",
+    "Two-Office Presence in Vasai (West & East)",
+    "Over 800+ Tax & 250+ GST Clients Served",
+    "Litigation, Scrutiny & Refund Defense Expertise",
+    "15-Member Integrated Professional Team",
+  ];
+
+  if (page?.bulletPoints) {
+    try {
+      const parsed = JSON.parse(page.bulletPoints);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        bulletPoints = parsed;
+      }
+    } catch {}
+  }
+
   return (
     <div className="space-y-0">
       {/* 1. Hero Slider */}
@@ -42,31 +89,28 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gold-50 border border-gold-200 text-gold-700 text-xs font-bold uppercase tracking-wider">
                 <ShieldCheck className="w-3.5 h-3.5 text-gold-600" />
-                <span>Firm Overview & Ethos</span>
+                <span>Firm Overview &amp; Ethos</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black text-navy-950 tracking-tight leading-tight">
-                Professional Expertise. Partner-Led Approach.
+                {introHeadline}
               </h2>
 
-              <p className="text-base sm:text-lg text-slate-700 leading-relaxed">
-                <strong>Y K Chaturvedi & Co.</strong> is a partnership firm of Chartered Accountants registered with the Institute of Chartered Accountants of India (ICAI), established on <strong>02 September 2017</strong> and practising from two offices in Vasai, Dist. Palghar.
+              <p className="text-base sm:text-lg text-slate-700 leading-relaxed font-medium">
+                {introText}
               </p>
 
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                The firm serves corporates, LLPs, partnership firms, MSMEs, trusts, societies, and individuals with comprehensive audit, taxation, certification, regulatory compliance, business setup, and advisory services—<strong>under direct partner supervision</strong>. Our established client base includes more than 250 GST clients and over 800 Income-tax clients across Maharashtra and the Mumbai Metropolitan Region.
-              </p>
+              {/* Dynamic Rich Article Content */}
+              {page?.content && (
+                <div
+                  className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-3 break-words [overflow-wrap:anywhere] [word-break:break-word]"
+                  dangerouslySetInnerHTML={{ __html: page.content }}
+                />
+              )}
 
               {/* Core Features List */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                {[
-                  "Direct Partner Supervision on Every Engagement",
-                  "Registered with ICAI (FRN: 145633W)",
-                  "Two-Office Presence in Vasai (West & East)",
-                  "Over 800+ Tax & 250+ GST Clients Served",
-                  "Litigation, Scrutiny & Refund Defense Expertise",
-                  "15-Member Integrated Professional Team",
-                ].map((item, idx) => (
+                {bulletPoints.map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700">
                     <CheckCircle2 className="w-4 h-4 text-gold-600 shrink-0 mt-0.5" />
                     <span>{item}</span>

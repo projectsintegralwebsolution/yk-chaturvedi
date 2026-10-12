@@ -44,7 +44,7 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
       <BlogForm
         initialData={{
           ...blog,
-          publishedAt: blog.publishedAt ? new Date(blog.publishedAt).toISOString().split("T")[0] : "",
+          publishedAt: blog.publishedAt ? new Date(blog.publishedAt).toISOString() : "",
         }}
         categories={categories}
         isEdit={true}

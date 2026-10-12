@@ -16,14 +16,45 @@ import {
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { firmData } from "@/data/firmData";
+import { getPageBySlug } from "@/lib/getPageContent";
 
-export const metadata: Metadata = {
-  title: "Our Team | 15 Professionals. One Integrated Team.",
-  description:
-    "Explore the 15-member professional team at Y K Chaturvedi & Co., Chartered Accountants, spanning partners, senior manager Gopeshwar Chaturvedi, accounts executives, and article assistants across two Vasai offices.",
-};
+export const dynamic = "force-dynamic";
 
-export default function TeamPage() {
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug("team");
+  return {
+    title: page?.metaTitle || "Our Team | 15 Professionals. One Integrated Team.",
+    description:
+      page?.metaDescription ||
+      "Explore the 15-member professional team at Y K Chaturvedi & Co., Chartered Accountants, spanning partners, senior manager Gopeshwar Chaturvedi, accounts executives, and article assistants across two Vasai offices.",
+    alternates: {
+      canonical: page?.canonicalUrl || "https://ykcassociates.in/team",
+    },
+    openGraph: {
+      title: page?.metaTitle || "Our Team | Y K Chaturvedi & Co.",
+      description: page?.metaDescription || undefined,
+      images: page?.bannerImage ? [{ url: page.bannerImage }] : undefined,
+    },
+  };
+}
+
+export default async function TeamPage() {
+  const page = await getPageBySlug("team");
+
+  const bannerTitle = page?.bannerTitle || page?.title || "Our Team";
+  const bannerSubtitle =
+    page?.bannerSubtitle ||
+    "15 dedicated professionals operating in unison across two Vasai offices under direct partner supervision.";
+  const bannerBadge = page?.bannerBadge || "Integrated Professional Strength";
+  const bannerImage =
+    page?.bannerImage ||
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1920&auto=format&fit=crop";
+
+  const introHeadline = page?.introHeadline || "Structured for Accuracy, Speed & Compliance";
+  const introText =
+    page?.introText ||
+    "Our 15-member firm is organized into clear functional cadres—ensuring every bookkeeping entry, return filing, and audit certification receives specialized attention and senior review.";
+
   const teamDivisions = [
     {
       title: "Partnership & Statutory Leadership",
@@ -101,11 +132,11 @@ export default function TeamPage() {
     <div>
       {/* 1. Inner Page Banner */}
       <PageBanner
-        title="Our Team"
-        subtitle="15 dedicated professionals operating in unison across two Vasai offices under direct partner supervision."
+        title={bannerTitle}
+        subtitle={bannerSubtitle}
         breadcrumbs={[{ label: "Team" }]}
-        bgImage="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1920&auto=format&fit=crop"
-        badge="Integrated Professional Strength"
+        bgImage={bannerImage}
+        badge={bannerBadge}
       />
 
       {/* 2. Team Composition Overview */}
@@ -117,11 +148,19 @@ export default function TeamPage() {
               <span>Full-Time Professional Strength</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-black text-navy-950 tracking-tight mb-4">
-              Structured for Accuracy, Speed & Compliance
+              {introHeadline}
             </h2>
-            <p className="text-base text-slate-600 leading-relaxed">
-              Our 15-member firm is organized into clear functional cadres—ensuring every bookkeeping entry, return filing, and audit certification receives specialized attention and senior review.
+            <p className="text-base text-slate-600 leading-relaxed font-medium">
+              {introText}
             </p>
+
+            {/* Dynamic Rich Article Content */}
+            {page?.content && (
+              <div
+                className="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed border-t border-slate-100 pt-4 mt-6 text-left break-words [overflow-wrap:anywhere] [word-break:break-word]"
+                dangerouslySetInnerHTML={{ __html: page.content }}
+              />
+            )}
           </div>
 
           {/* Quick Numerical Badges */}
