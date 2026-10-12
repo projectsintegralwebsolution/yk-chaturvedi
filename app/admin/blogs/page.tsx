@@ -1,7 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { getAllBlogs, getAllCategories } from "@/lib/jsonDb";
 import { BlogsManager } from "@/components/admin/BlogsManager";
 
 export const dynamic = "force-dynamic";
@@ -12,13 +12,9 @@ export default async function AdminBlogsListPage() {
   }
 
   const [blogs, categories] = await Promise.all([
-    prisma.blog.findMany({
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.category.findMany({
-      orderBy: { name: "asc" },
-    }),
+    getAllBlogs(),
+    getAllCategories(),
   ]);
 
-  return <BlogsManager initialBlogs={blogs} categories={categories} />;
+  return <BlogsManager initialBlogs={blogs as any} categories={categories as any} />;
 }

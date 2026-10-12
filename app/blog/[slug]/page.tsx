@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { getBlogBySlug, getPublicBlogs } from "@/lib/jsonDb";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import {
@@ -34,15 +34,21 @@ interface BlogPostPageProps {
 export async function generateMetadata({
   params,
 }: BlogPostPageProps): Promise<Metadata> {
-  const blog = await prisma.blog.findFirst({
-    where: {
-      slug: params.slug,
-      OR: [
-        { status: "Published", publishedAt: { lte: new Date() } },
-        { status: "Scheduled", publishedAt: { lte: new Date() } },
-      ],
-    },
-  });
+  const blog = await getBlogBySlug(params.slug);
+  const now = new Date();
+
+  // Check visibility (must be Published or Scheduled with publishedAt <= now)
+  if (!blog) {
+    return { title: "Article Not Found | Y K Chaturvedi & Co." };
+  }
+
+  if (blog.status === "Scheduled" && new Date(blog.publishedAt) > now) {
+    return { title: "Article Not Found | Y K Chaturvedi & Co." };
+  }
+
+  if (blog.status === "Draft") {
+    return { title: "Article Not Found | Y K Chaturvedi & Co." };
+  }
 
   if (!blog) {
     return {
@@ -95,51 +101,29 @@ export async function generateMetadata({
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const blog = await prisma.blog.findFirst({
-    where: {
-      slug: params.slug,
-      OR: [
-        { status: "Published", publishedAt: { lte: new Date() } },
-        { status: "Scheduled", publishedAt: { lte: new Date() } },
-      ],
-    },
-  });
+  const blog = await getBlogBySlug(params.slug);
+  const now = new Date();
 
   if (!blog) {
     notFound();
   }
 
-  const liveCondition = {
-    OR: [
-      { status: "Published", publishedAt: { lte: new Date() } },
-      { status: "Scheduled", publishedAt: { lte: new Date() } },
-    ],
-  };
+  // Check publication visibility
+  if (blog.status === "Scheduled" && new Date(blog.publishedAt) > now) {
+    notFound();
+  }
+  if (blog.status === "Draft") {
+    notFound();
+  }
 
-  // Fetch related blogs in same category (excluding current), max 3
-  let relatedBlogs = await prisma.blog.findMany({
-    where: {
-      ...liveCondition,
-      category: blog.category,
-      id: { not: blog.id },
-    },
-    orderBy: { publishedAt: "desc" },
-    take: 3,
-  });
+  const allPublicBlogs = await getPublicBlogs();
+  const otherBlogs = allPublicBlogs.filter((b) => b.id !== blog.id);
 
-  // If fewer than 3 in same category, backfill with recent published
+  // Related blogs in same category
+  let relatedBlogs = otherBlogs.filter((b) => b.category === blog.category).slice(0, 3);
   if (relatedBlogs.length < 3) {
-    const additional = await prisma.blog.findMany({
-      where: {
-        ...liveCondition,
-        id: {
-          notIn: [blog.id, ...relatedBlogs.map((r) => r.id)],
-        },
-      },
-      orderBy: { publishedAt: "desc" },
-      take: 3 - relatedBlogs.length,
-    });
-    relatedBlogs = [...relatedBlogs, ...additional];
+    const remaining = otherBlogs.filter((b) => !relatedBlogs.some((r) => r.id === b.id));
+    relatedBlogs = [...relatedBlogs, ...remaining.slice(0, 3 - relatedBlogs.length)];
   }
 
   // Calculate read time

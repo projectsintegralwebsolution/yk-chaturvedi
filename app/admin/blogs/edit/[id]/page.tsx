@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound, redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { getBlogById, getAllCategories } from "@/lib/jsonDb";
 import { BlogForm } from "@/components/admin/BlogForm";
 
 export const dynamic = "force-dynamic";
@@ -18,12 +18,8 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
   }
 
   const [blog, categories] = await Promise.all([
-    prisma.blog.findUnique({
-      where: { id: params.id },
-    }),
-    prisma.category.findMany({
-      orderBy: { name: "asc" },
-    }),
+    getBlogById(params.id),
+    getAllCategories(),
   ]);
 
   if (!blog) {
@@ -46,7 +42,7 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
           ...blog,
           publishedAt: blog.publishedAt ? new Date(blog.publishedAt).toISOString() : "",
         }}
-        categories={categories}
+        categories={categories as any}
         isEdit={true}
       />
     </div>

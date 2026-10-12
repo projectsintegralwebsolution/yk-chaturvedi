@@ -13,7 +13,7 @@ import {
   Calendar,
   Sparkles,
 } from "lucide-react";
-import prisma from "@/lib/prisma";
+import { getAllPages, getAllBlogs } from "@/lib/jsonDb";
 import { isAdminAuthenticated } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -23,29 +23,20 @@ export default async function AdminDashboardPage() {
     redirect("/admin/login");
   }
 
-  const [
-    totalPages,
-    publishedPagesCount,
-    totalBlogs,
-    publishedBlogsCount,
-    scheduledBlogsCount,
-    recentPages,
-    recentBlogs,
-  ] = await Promise.all([
-    prisma.page.count(),
-    prisma.page.count({ where: { status: "Published" } }),
-    prisma.blog.count(),
-    prisma.blog.count({ where: { status: "Published" } }),
-    prisma.blog.count({ where: { status: "Scheduled" } }),
-    prisma.page.findMany({
-      orderBy: { updatedAt: "desc" },
-      take: 6,
-    }),
-    prisma.blog.findMany({
-      orderBy: { updatedAt: "desc" },
-      take: 6,
-    }),
+  const [pages, blogs] = await Promise.all([
+    getAllPages(),
+    getAllBlogs(),
   ]);
+
+  const totalPages = pages.length;
+  const publishedPagesCount = pages.filter((p) => p.status === "Published").length;
+  const totalBlogs = blogs.length;
+  const publishedBlogsCount = blogs.filter((b) => b.status === "Published").length;
+  const scheduledBlogsCount = blogs.filter((b) => b.status === "Scheduled").length;
+  const recentPages = [...pages]
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .slice(0, 6);
+  const recentBlogs = [...blogs].slice(0, 6);
 
   return (
     <div className="space-y-8">

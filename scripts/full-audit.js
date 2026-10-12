@@ -233,14 +233,14 @@ async function runFullAudit() {
     console.log("✓ Blog deletion verified.");
   }
 
-  // 11. JSON FILE BACKUP SYNC
-  console.log("\n[11] Checking JSON Backup File Sync...");
-  const jsonPath = path.join(process.cwd(), "data", "blogs-export.json");
+  // 11. JSON FILE STORAGE SYNC
+  console.log("\n[11] Checking JSON Storage File Sync...");
+  const jsonPath = path.join(process.cwd(), "data", "blogs.json");
   if (fs.existsSync(jsonPath)) {
     const jsonContent = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
-    console.log(`- data/blogs-export.json exists: YES, contains ${jsonContent.length} articles`);
+    console.log(`- data/blogs.json exists: YES, contains ${jsonContent.length} articles`);
     results.jsonSync = true;
-    console.log("✓ JSON backup sync verified.");
+    console.log("✓ Pure JSON file storage verified.");
   }
 
   console.log("\n==================================================");

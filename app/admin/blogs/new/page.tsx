@@ -1,7 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { getAllCategories } from "@/lib/jsonDb";
 import { BlogForm } from "@/components/admin/BlogForm";
 
 export const dynamic = "force-dynamic";
@@ -11,9 +11,7 @@ export default async function NewBlogPage() {
     redirect("/admin/login");
   }
 
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-  });
+  const categories = await getAllCategories();
 
   return (
     <div>
@@ -26,7 +24,7 @@ export default async function NewBlogPage() {
         </p>
       </div>
 
-      <BlogForm categories={categories} />
+      <BlogForm categories={categories as any} />
     </div>
   );
 }

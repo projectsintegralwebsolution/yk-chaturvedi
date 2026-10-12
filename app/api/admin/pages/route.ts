@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { syncPagesToJsonFile } from "@/lib/jsonSync";
+import { getAllPages, getPageBySlug, createPage } from "@/lib/jsonDb";
 
 export async function GET() {
   if (!isAdminAuthenticated()) {
@@ -9,9 +8,7 @@ export async function GET() {
   }
 
   try {
-    const pages = await prisma.page.findMany({
-      orderBy: { updatedAt: "desc" },
-    });
+    const pages = await getAllPages();
     return NextResponse.json(pages);
   } catch (error: any) {
     console.error("Error fetching pages:", error);
@@ -43,9 +40,7 @@ export async function POST(request: Request) {
       .replace(/[^a-z0-9_-]/g, "-")
       .replace(/-+/g, "-");
 
-    const existing = await prisma.page.findUnique({
-      where: { slug: cleanSlug },
-    });
+    const existing = await getPageBySlug(cleanSlug);
 
     if (existing) {
       return NextResponse.json(
@@ -54,40 +49,35 @@ export async function POST(request: Request) {
       );
     }
 
-    const newPage = await prisma.page.create({
-      data: {
-        slug: cleanSlug,
-        title: data.title,
-        path: data.path || `/${cleanSlug}`,
-        category: data.category || "Custom Page",
-        status: data.status || "Published",
-        bannerTitle: data.bannerTitle || data.title,
-        bannerSubtitle: data.bannerSubtitle || null,
-        bannerBadge: data.bannerBadge || null,
-        bannerImage: data.bannerImage || null,
-        introHeadline: data.introHeadline || null,
-        introText: data.introText || null,
-        content: data.content || "",
-        bulletPoints: data.bulletPoints
-          ? typeof data.bulletPoints === "string"
-            ? data.bulletPoints
-            : JSON.stringify(data.bulletPoints)
-          : null,
-        metaTitle: data.metaTitle || null,
-        metaDescription: data.metaDescription || null,
-        focusKeyword: data.focusKeyword || null,
-        keywords: data.keywords || null,
-        canonicalUrl: data.canonicalUrl || null,
-        customData: data.customData
-          ? typeof data.customData === "string"
-            ? data.customData
-            : JSON.stringify(data.customData)
-          : null,
-      },
+    const newPage = await createPage({
+      slug: cleanSlug,
+      title: data.title,
+      path: data.path || `/${cleanSlug}`,
+      category: data.category || "Custom Page",
+      status: data.status || "Published",
+      bannerTitle: data.bannerTitle || data.title,
+      bannerSubtitle: data.bannerSubtitle || null,
+      bannerBadge: data.bannerBadge || null,
+      bannerImage: data.bannerImage || null,
+      introHeadline: data.introHeadline || null,
+      introText: data.introText || null,
+      content: data.content || "",
+      bulletPoints: data.bulletPoints
+        ? typeof data.bulletPoints === "string"
+          ? data.bulletPoints
+          : JSON.stringify(data.bulletPoints)
+        : null,
+      metaTitle: data.metaTitle || null,
+      metaDescription: data.metaDescription || null,
+      focusKeyword: data.focusKeyword || null,
+      keywords: data.keywords || null,
+      canonicalUrl: data.canonicalUrl || null,
+      customData: data.customData
+        ? typeof data.customData === "string"
+          ? data.customData
+          : JSON.stringify(data.customData)
+        : null,
     });
-
-    // Auto-sync to JSON file
-    await syncPagesToJsonFile();
 
     return NextResponse.json(newPage, { status: 201 });
   } catch (error: any) {

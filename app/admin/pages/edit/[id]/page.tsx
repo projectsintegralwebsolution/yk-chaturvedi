@@ -1,7 +1,7 @@
 import React from "react";
 import { notFound, redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { getPageById, getPageBySlug } from "@/lib/jsonDb";
 import { PageEditForm, PageFormData } from "@/components/admin/PageEditForm";
 
 export const dynamic = "force-dynamic";
@@ -17,11 +17,7 @@ export default async function AdminEditPageScreen({ params }: EditPageProps) {
     redirect("/admin/login");
   }
 
-  const page = await prisma.page.findFirst({
-    where: {
-      OR: [{ id: params.id }, { slug: params.id }],
-    },
-  });
+  const page = (await getPageById(params.id)) || (await getPageBySlug(params.id));
 
   if (!page) {
     notFound();
@@ -30,7 +26,7 @@ export default async function AdminEditPageScreen({ params }: EditPageProps) {
   let bulletPoints: string[] = [];
   if (page.bulletPoints) {
     try {
-      bulletPoints = JSON.parse(page.bulletPoints);
+      bulletPoints = typeof page.bulletPoints === "string" ? JSON.parse(page.bulletPoints) : page.bulletPoints;
     } catch {
       bulletPoints = [];
     }

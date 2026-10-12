@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { createEnquiry } from "@/lib/jsonDb";
 import { sendThreeWayEnquiryNotifications } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
@@ -61,14 +61,12 @@ export async function POST(request: Request) {
       message: message.trim().slice(0, 3000),
     };
 
-    // 2. Persist enquiry in database
+    // 2. Persist enquiry in JSON file
     let savedEnquiry = null;
     try {
-      savedEnquiry = await prisma.enquiry.create({
-        data: sanitizedData,
-      });
-    } catch (dbError) {
-      console.error("[Database Save Error] Failed to persist enquiry to database:", dbError);
+      savedEnquiry = await createEnquiry(sanitizedData);
+    } catch (saveError) {
+      console.error("[JSON Save Error] Failed to persist enquiry to JSON file:", saveError);
       // Non-fatal: continue to email notifications
     }
 

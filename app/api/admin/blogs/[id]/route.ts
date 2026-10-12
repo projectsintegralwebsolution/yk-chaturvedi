@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { syncBlogsToJsonFile } from "@/lib/jsonSync";
+import { getBlogById, getBlogBySlug, updateBlog, deleteBlog } from "@/lib/jsonDb";
 
 interface Params {
   params: {
@@ -15,9 +14,7 @@ export async function GET(request: Request, { params }: Params) {
   }
 
   try {
-    const blog = await prisma.blog.findUnique({
-      where: { id: params.id },
-    });
+    const blog = await getBlogById(params.id);
 
     if (!blog) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
@@ -55,9 +52,7 @@ export async function PUT(request: Request, { params }: Params) {
 
     // Check slug uniqueness excluding this record
     if (slug) {
-      const existing = await prisma.blog.findUnique({
-        where: { slug },
-      });
+      const existing = await getBlogBySlug(slug);
       if (existing && existing.id !== params.id) {
         return NextResponse.json(
           { error: "Another blog is already using this slug" },
@@ -66,28 +61,26 @@ export async function PUT(request: Request, { params }: Params) {
       }
     }
 
-    const updatedBlog = await prisma.blog.update({
-      where: { id: params.id },
-      data: {
-        ...(title && { title }),
-        ...(slug && { slug }),
-        ...(excerpt !== undefined && { excerpt }),
-        ...(content && { content }),
-        ...(featuredImage && { featuredImage }),
-        ...(category && { category }),
-        ...(author && { author }),
-        ...(publishedAt && { publishedAt: new Date(publishedAt) }),
-        ...(status && { status }),
-        ...(metaTitle !== undefined && { metaTitle }),
-        ...(metaDescription !== undefined && { metaDescription }),
-        ...(focusKeyword !== undefined && { focusKeyword }),
-        ...(keywords !== undefined && { keywords }),
-        ...(canonicalUrl !== undefined && { canonicalUrl }),
-      },
+    const updatedBlog = await updateBlog(params.id, {
+      ...(title !== undefined && { title }),
+      ...(slug !== undefined && { slug }),
+      ...(excerpt !== undefined && { excerpt }),
+      ...(content !== undefined && { content }),
+      ...(featuredImage !== undefined && { featuredImage }),
+      ...(category !== undefined && { category }),
+      ...(author !== undefined && { author }),
+      ...(publishedAt !== undefined && { publishedAt }),
+      ...(status !== undefined && { status }),
+      ...(metaTitle !== undefined && { metaTitle }),
+      ...(metaDescription !== undefined && { metaDescription }),
+      ...(focusKeyword !== undefined && { focusKeyword }),
+      ...(keywords !== undefined && { keywords }),
+      ...(canonicalUrl !== undefined && { canonicalUrl }),
     });
 
-    // Auto-sync JSON backup
-    await syncBlogsToJsonFile();
+    if (!updatedBlog) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
 
     return NextResponse.json({ success: true, blog: updatedBlog });
   } catch (error: any) {
@@ -104,12 +97,10 @@ export async function DELETE(request: Request, { params }: Params) {
   }
 
   try {
-    await prisma.blog.delete({
-      where: { id: params.id },
-    });
-
-    // Auto-sync JSON backup
-    await syncBlogsToJsonFile();
+    const success = await deleteBlog(params.id);
+    if (!success) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
 
     return NextResponse.json({ success: true, message: "Blog deleted successfully" });
   } catch (error) {

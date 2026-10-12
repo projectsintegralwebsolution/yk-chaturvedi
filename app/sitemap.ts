@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { servicesData } from "@/data/servicesData";
-import prisma from "@/lib/prisma";
+import { getPublicBlogs, getAllPages } from "@/lib/jsonDb";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://ykchaturvedi.com";
@@ -29,16 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let blogRoutes: MetadataRoute.Sitemap = [];
   try {
-    const publishedBlogs = await prisma.blog.findMany({
-      where: {
-        OR: [
-          { status: "Published", publishedAt: { lte: new Date() } },
-          { status: "Scheduled", publishedAt: { lte: new Date() } },
-        ],
-      },
-      select: { slug: true, updatedAt: true },
-    });
-
+    const publishedBlogs = await getPublicBlogs();
     blogRoutes = publishedBlogs.map((b) => ({
       url: `${baseUrl}/blog/${b.slug}`,
       lastModified: new Date(b.updatedAt),
@@ -52,13 +43,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Include any custom published pages
   let customPageRoutes: MetadataRoute.Sitemap = [];
   try {
-    const customPages = await prisma.page.findMany({
-      where: {
-        status: "Published",
-        category: "Custom Page",
-      },
-      select: { path: true, updatedAt: true },
-    });
+    const allPages = await getAllPages();
+    const customPages = allPages.filter(
+      (p) => p.status === "Published" && p.category === "Custom Page"
+    );
 
     customPageRoutes = customPages.map((p) => ({
       url: `${baseUrl}${p.path}`,

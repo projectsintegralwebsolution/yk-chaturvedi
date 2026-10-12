@@ -1,40 +1,10 @@
-import prisma from "@/lib/prisma";
+import { getPageBySlug as getPageFromJson, PageItem } from "@/lib/jsonDb";
 
-export interface PageContentData {
-  id: string;
-  slug: string;
-  title: string;
-  path: string;
-  category: string;
-  status: string;
-  bannerTitle?: string | null;
-  bannerSubtitle?: string | null;
-  bannerBadge?: string | null;
-  bannerImage?: string | null;
-  introHeadline?: string | null;
-  introText?: string | null;
-  content?: string | null;
-  bulletPoints?: string | null;
-  metaTitle?: string | null;
-  metaDescription?: string | null;
-  focusKeyword?: string | null;
-  keywords?: string | null;
-  canonicalUrl?: string | null;
-  customData?: string | null;
-}
+export type PageContentData = PageItem;
 
 /**
- * Retrieves page content from SQLite database by slug.
- * Returns null if not found or on error, allowing pages to gracefully fallback to their hardcoded defaults.
+ * Retrieves page content directly from data/pages.json (Pure JSON storage).
  */
 export async function getPageBySlug(slug: string): Promise<PageContentData | null> {
-  try {
-    const page = await prisma.page.findUnique({
-      where: { slug },
-    });
-    return page as PageContentData | null;
-  } catch (err) {
-    console.error(`Error loading page content for "${slug}":`, err);
-    return null;
-  }
+  return getPageFromJson(slug);
 }

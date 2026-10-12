@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import prisma from "@/lib/prisma";
+import { getPublicBlogs, getAllCategories } from "@/lib/jsonDb";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { BlogListClient } from "@/components/blog/BlogListClient";
@@ -22,22 +22,8 @@ export const metadata: Metadata = {
 
 export default async function BlogListingPage() {
   const [blogs, categories] = await Promise.all([
-    prisma.blog.findMany({
-      where: {
-        OR: [
-          { status: "Published", publishedAt: { lte: new Date() } },
-          { status: "Scheduled", publishedAt: { lte: new Date() } },
-        ],
-      },
-      orderBy: {
-        publishedAt: "desc",
-      },
-    }),
-    prisma.category.findMany({
-      orderBy: {
-        name: "asc",
-      },
-    }),
+    getPublicBlogs(),
+    getAllCategories(),
   ]);
 
   return (
@@ -54,12 +40,15 @@ export default async function BlogListingPage() {
       {/* 2. Main Content Area */}
       <section className="py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <BlogListClient blogs={blogs} categories={categories} />
+          <BlogListClient blogs={blogs as any} categories={categories as any} />
         </div>
       </section>
 
-      {/* 3. Advisory CTA */}
-      <CTASection />
+      {/* 3. CTA */}
+      <CTASection
+        title="Have Questions Regarding a Recent Statutory Amendment?"
+        subtitle="Schedule a consultation with CA Yogesh Kumar Chaturvedi or CA Saurabh Bhutada to understand how recent changes impact your business."
+      />
     </div>
   );
 }

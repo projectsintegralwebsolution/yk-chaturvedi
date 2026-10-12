@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { syncBlogsToJsonFile } from "@/lib/jsonSync";
+import { getAllBlogs, getBlogBySlug, createBlog } from "@/lib/jsonDb";
 
 export async function GET() {
   if (!isAdminAuthenticated()) {
@@ -9,9 +8,7 @@ export async function GET() {
   }
 
   try {
-    const blogs = await prisma.blog.findMany({
-      orderBy: { createdAt: "desc" },
-    });
+    const blogs = await getAllBlogs();
     return NextResponse.json({ blogs });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
@@ -50,10 +47,7 @@ export async function POST(request: Request) {
     }
 
     // Check slug uniqueness
-    const existing = await prisma.blog.findUnique({
-      where: { slug },
-    });
-
+    const existing = await getBlogBySlug(slug);
     if (existing) {
       return NextResponse.json(
         { error: "A blog with this slug already exists" },
@@ -61,32 +55,26 @@ export async function POST(request: Request) {
       );
     }
 
-    const blog = await prisma.blog.create({
-      data: {
-        title,
-        slug,
-        excerpt: excerpt || title,
-        content,
-        featuredImage:
-          featuredImage ||
-          "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop",
-        category,
-        author: author || "CA Saurabh Bhutada",
-        publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
-        status: status || "Published",
-        metaTitle: metaTitle || title,
-        metaDescription: metaDescription || excerpt || title,
-        focusKeyword: focusKeyword || "",
-        keywords: keywords || "",
-        canonicalUrl: canonicalUrl || "",
-      },
+    const blog = await createBlog({
+      title,
+      slug,
+      excerpt: excerpt || title,
+      content,
+      featuredImage: featuredImage || "/images/blog-default.jpg",
+      category,
+      author: author || "CA Saurabh Bhutada",
+      publishedAt: publishedAt || new Date().toISOString(),
+      status: status || "Published",
+      metaTitle: metaTitle || null,
+      metaDescription: metaDescription || null,
+      focusKeyword: focusKeyword || null,
+      keywords: keywords || null,
+      canonicalUrl: canonicalUrl || null,
     });
 
-    // Auto-sync JSON backup
-    await syncBlogsToJsonFile();
-
-    return NextResponse.json({ success: true, blog }, { status: 201 });
+    return NextResponse.json({ success: true, blog, id: blog.id }, { status: 201 });
   } catch (error: any) {
+    console.error("Create blog error:", error);
     return NextResponse.json(
       { error: error?.message || "Failed to create blog" },
       { status: 500 }

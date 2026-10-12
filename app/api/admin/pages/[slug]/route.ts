@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { syncPagesToJsonFile } from "@/lib/jsonSync";
+import { getPageById, getPageBySlug, updatePage, deletePage } from "@/lib/jsonDb";
 
 export async function GET(
   request: Request,
@@ -12,11 +11,7 @@ export async function GET(
   }
 
   try {
-    const page = await prisma.page.findFirst({
-      where: {
-        OR: [{ slug: params.slug }, { id: params.slug }],
-      },
-    });
+    const page = (await getPageBySlug(params.slug)) || (await getPageById(params.slug));
 
     if (!page) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
@@ -43,50 +38,40 @@ export async function PUT(
   try {
     const data = await request.json();
 
-    const existingPage = await prisma.page.findFirst({
-      where: {
-        OR: [{ slug: params.slug }, { id: params.slug }],
-      },
-    });
+    const existingPage = (await getPageBySlug(params.slug)) || (await getPageById(params.slug));
 
     if (!existingPage) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
 
-    const updated = await prisma.page.update({
-      where: { id: existingPage.id },
-      data: {
-        title: data.title ?? existingPage.title,
-        path: data.path ?? existingPage.path,
-        category: data.category ?? existingPage.category,
-        status: data.status ?? existingPage.status,
-        bannerTitle: data.bannerTitle !== undefined ? data.bannerTitle : existingPage.bannerTitle,
-        bannerSubtitle: data.bannerSubtitle !== undefined ? data.bannerSubtitle : existingPage.bannerSubtitle,
-        bannerBadge: data.bannerBadge !== undefined ? data.bannerBadge : existingPage.bannerBadge,
-        bannerImage: data.bannerImage !== undefined ? data.bannerImage : existingPage.bannerImage,
-        introHeadline: data.introHeadline !== undefined ? data.introHeadline : existingPage.introHeadline,
-        introText: data.introText !== undefined ? data.introText : existingPage.introText,
-        content: data.content !== undefined ? data.content : existingPage.content,
-        bulletPoints: data.bulletPoints !== undefined
-          ? typeof data.bulletPoints === "string"
-            ? data.bulletPoints
-            : JSON.stringify(data.bulletPoints)
-          : existingPage.bulletPoints,
-        metaTitle: data.metaTitle !== undefined ? data.metaTitle : existingPage.metaTitle,
-        metaDescription: data.metaDescription !== undefined ? data.metaDescription : existingPage.metaDescription,
-        focusKeyword: data.focusKeyword !== undefined ? data.focusKeyword : existingPage.focusKeyword,
-        keywords: data.keywords !== undefined ? data.keywords : existingPage.keywords,
-        canonicalUrl: data.canonicalUrl !== undefined ? data.canonicalUrl : existingPage.canonicalUrl,
-        customData: data.customData !== undefined
-          ? typeof data.customData === "string"
-            ? data.customData
-            : JSON.stringify(data.customData)
-          : existingPage.customData,
-      },
+    const updated = await updatePage(existingPage.id, {
+      title: data.title ?? existingPage.title,
+      path: data.path ?? existingPage.path,
+      category: data.category ?? existingPage.category,
+      status: data.status ?? existingPage.status,
+      bannerTitle: data.bannerTitle !== undefined ? data.bannerTitle : existingPage.bannerTitle,
+      bannerSubtitle: data.bannerSubtitle !== undefined ? data.bannerSubtitle : existingPage.bannerSubtitle,
+      bannerBadge: data.bannerBadge !== undefined ? data.bannerBadge : existingPage.bannerBadge,
+      bannerImage: data.bannerImage !== undefined ? data.bannerImage : existingPage.bannerImage,
+      introHeadline: data.introHeadline !== undefined ? data.introHeadline : existingPage.introHeadline,
+      introText: data.introText !== undefined ? data.introText : existingPage.introText,
+      content: data.content !== undefined ? data.content : existingPage.content,
+      bulletPoints: data.bulletPoints !== undefined
+        ? typeof data.bulletPoints === "string"
+          ? data.bulletPoints
+          : JSON.stringify(data.bulletPoints)
+        : existingPage.bulletPoints,
+      metaTitle: data.metaTitle !== undefined ? data.metaTitle : existingPage.metaTitle,
+      metaDescription: data.metaDescription !== undefined ? data.metaDescription : existingPage.metaDescription,
+      focusKeyword: data.focusKeyword !== undefined ? data.focusKeyword : existingPage.focusKeyword,
+      keywords: data.keywords !== undefined ? data.keywords : existingPage.keywords,
+      canonicalUrl: data.canonicalUrl !== undefined ? data.canonicalUrl : existingPage.canonicalUrl,
+      customData: data.customData !== undefined
+        ? typeof data.customData === "string"
+          ? data.customData
+          : JSON.stringify(data.customData)
+        : existingPage.customData,
     });
-
-    // Auto-sync to JSON file
-    await syncPagesToJsonFile();
 
     return NextResponse.json(updated);
   } catch (error: any) {
@@ -107,11 +92,7 @@ export async function DELETE(
   }
 
   try {
-    const existing = await prisma.page.findFirst({
-      where: {
-        OR: [{ slug: params.slug }, { id: params.slug }],
-      },
-    });
+    const existing = (await getPageBySlug(params.slug)) || (await getPageById(params.slug));
 
     if (!existing) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
@@ -126,11 +107,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.page.delete({
-      where: { id: existing.id },
-    });
-
-    await syncPagesToJsonFile();
+    await deletePage(existing.id);
 
     return NextResponse.json({ success: true, message: "Page deleted successfully" });
   } catch (error: any) {

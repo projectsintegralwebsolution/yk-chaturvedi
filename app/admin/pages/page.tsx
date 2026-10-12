@@ -1,7 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { getAllPages } from "@/lib/jsonDb";
 import { PagesManager, PageItem } from "@/components/admin/PagesManager";
 
 export const dynamic = "force-dynamic";
@@ -11,9 +11,7 @@ export default async function AdminPagesListPage() {
     redirect("/admin/login");
   }
 
-  const rawPages = await prisma.page.findMany({
-    orderBy: { updatedAt: "desc" },
-  });
+  const rawPages = await getAllPages();
 
   const pages: PageItem[] = rawPages.map((p) => ({
     id: p.id,
@@ -34,8 +32,8 @@ export default async function AdminPagesListPage() {
     metaDescription: p.metaDescription,
     focusKeyword: p.focusKeyword,
     canonicalUrl: p.canonicalUrl,
-    createdAt: p.createdAt.toISOString(),
-    updatedAt: p.updatedAt.toISOString(),
+    createdAt: p.createdAt,
+    updatedAt: p.updatedAt,
   }));
 
   return <PagesManager initialPages={pages} />;
