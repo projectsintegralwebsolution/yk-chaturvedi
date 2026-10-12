@@ -60,13 +60,13 @@ export async function generateMetadata({
   };
 }
 
+
 export default async function ServiceDetailPage({ params }: ServicePageProps) {
-  const service = servicesData.find((s) => s.slug === params.slug);
+  const service =
+    servicesData.find((s) => s.slug === params.slug) ?? notFound();
+
   const pageOverride = await getPageBySlug(params.slug);
 
-  if (!service && !pageOverride) {
-    notFound();
-  }
 
   const displayTitle = pageOverride?.bannerTitle || pageOverride?.title || service?.title || "Service";
   const displaySubtitle = pageOverride?.bannerSubtitle || service?.heroTagline || "";
@@ -130,11 +130,11 @@ export default async function ServiceDetailPage({ params }: ServicePageProps) {
                 <h3 className="text-xl font-heading font-bold text-navy-950 mb-6 flex items-center justify-between">
                   <span>Scope of Services Included</span>
                   <span className="text-xs font-bold text-[#0A5084] bg-[#0A5084]/10 border border-[#0A5084]/20 px-2.5 py-1 rounded-md">
-                    {service.inclusions.length} Specialized Areas
+                    {service?.inclusions?.length ?? 0} Specialized Areas
                   </span>
                 </h3>
                 <div className="space-y-3">
-                  {service.inclusions.map((item, idx) => (
+                  {(service?.inclusions ?? []).map((item, idx) => (
                     <div
                       key={idx}
                       className="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-slate-200/60 shadow-subtle hover:border-[#0A5084]/30 transition"

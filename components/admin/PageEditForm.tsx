@@ -495,10 +495,9 @@ export const PageEditForm: React.FC<PageEditFormProps> = ({
               </div>
 
               <RichEditor
-                value={formData.content}
-                onChange={(html) => setFormData({ ...formData, content: html })}
-                placeholder="Write or edit the main content of this page here..."
-              />
+  value={formData.content}
+  onChange={(html) => setFormData({ ...formData, content: html })}
+/>
             </div>
           )}
 
