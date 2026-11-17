@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -10,6 +11,15 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { isAdminAuthenticated } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Admin Portal | Y K Chaturvedi & Co.",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
 
 export default function AdminLayout({
   children,

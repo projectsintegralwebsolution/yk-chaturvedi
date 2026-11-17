@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+﻿const { PrismaClient } = require("@prisma/client");
 const fs = require("fs");
 const path = require("path");
 const { servicesData } = require("../data/servicesData.ts");
@@ -17,7 +17,7 @@ const defaultPages = [
     bannerBadge: "ICAI Registered CA Partnership Firm",
     bannerImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1920&auto=format&fit=crop",
     introHeadline: "Professional Expertise. Partner-Led Approach.",
-    introText: "Y K Chaturvedi & Co. is a partnership firm of Chartered Accountants registered with the Institute of Chartered Accountants of India (ICAI), established on 02 September 2017 and practising from two offices in Vasai, Dist. Palghar. The firm serves corporates, LLPs, partnership firms, MSMEs, trusts, societies, and individuals with comprehensive audit, taxation, certification, regulatory compliance, business setup, and advisory services—under direct partner supervision.",
+    introText: "Y K Chaturvedi & Co. is a partnership firm of Chartered Accountants registered with the Institute of Chartered Accountants of India (ICAI), established on 02 September 2017 and practising from two offices in Vasai, Dist. Palghar. The firm serves corporates, LLPs, partnership firms, MSMEs, trusts, societies, and individuals with comprehensive audit, taxation, certification, regulatory compliance, business setup, and advisory servicesâ€”under direct partner supervision.",
     content: `<h2>About Y K Chaturvedi & Co.</h2>
 <p>Established on <strong>02 September 2017</strong>, Y K Chaturvedi & Co. has grown into one of the most reliable and trusted Chartered Accountancy firms in the Mumbai Metropolitan Region and Palghar district. Every client engagement is managed directly by a designated partner, guaranteeing statutory depth, timely filing, and strategic commercial insights.</p>
 <h3>Our Established Client Base</h3>
@@ -34,7 +34,7 @@ const defaultPages = [
     metaDescription: "Partnership firm of Chartered Accountants in Vasai (West & East) registered with ICAI (FRN: 145633W). Direct partner-led statutory audit, GST, income tax & advisory.",
     focusKeyword: "Chartered Accountants Vasai",
     keywords: "Chartered Accountants Vasai, CA in Palghar, CA Firm Mumbai, Tax Audit, GST Consultant",
-    canonicalUrl: "https://ykcassociates.in/"
+    canonicalUrl: "https://ykchaturvedi.com/"
   },
   {
     slug: "about",
@@ -51,7 +51,7 @@ const defaultPages = [
     content: `<h2>Our Firm's Heritage & Ethos</h2>
 <p>At Y K Chaturvedi & Co., we believe that modern businesses deserve more than standard box-ticking compliance. They need proactive advisory, rock-solid legal backing during scrutiny proceedings, and clear forward-looking tax planning.</p>
 <h3>Uncompromising Partner Involvement</h3>
-<p>Unlike firms where client work is delegated completely to junior staff, our partners remain actively involved in every single deliverable—from statutory audit finalisations to high-stakes GST appeal drafting.</p>`,
+<p>Unlike firms where client work is delegated completely to junior staff, our partners remain actively involved in every single deliverableâ€”from statutory audit finalisations to high-stakes GST appeal drafting.</p>`,
     bulletPoints: JSON.stringify([
       "Registered with ICAI (FRN: 145633W)",
       "GSTIN: 27AACFY3275B1Z9",
@@ -63,7 +63,7 @@ const defaultPages = [
     metaDescription: "Learn about Y K Chaturvedi & Co., Chartered Accountants (FRN: 145633W, GSTIN: 27AACFY3275B1Z9). Established in September 2017, serving 800+ tax and 250+ GST clients under direct partner supervision from two Vasai offices.",
     focusKeyword: "About Y K Chaturvedi CA",
     keywords: "About CA firm, ICAI FRN 145633W, Chartered Accountants Vasai, Partnership Firm",
-    canonicalUrl: "https://ykcassociates.in/about"
+    canonicalUrl: "https://ykchaturvedi.com/about"
   },
   {
     slug: "services",
@@ -76,7 +76,7 @@ const defaultPages = [
     bannerBadge: "13 Specialized Practice Areas",
     bannerImage: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1920&auto=format&fit=crop",
     introHeadline: "Integrated Capabilities for Every Business Stage",
-    introText: "Whether you are an established corporate requiring statutory audit and cross-border FEMA advisory, an MSME navigating GST scrutiny and working capital loans, or an entrepreneur incorporating a company—our partners lead each assignment from planning to completion.",
+    introText: "Whether you are an established corporate requiring statutory audit and cross-border FEMA advisory, an MSME navigating GST scrutiny and working capital loans, or an entrepreneur incorporating a companyâ€”our partners lead each assignment from planning to completion.",
     content: `<h2>End-to-End Professional Accounting & Compliance Services</h2>
 <p>Our multidisciplinary practice spans across 13 distinct practice verticals, covering traditional statutory audits to advanced cross-border financing, transfer pricing documentation, and appellate litigation representation.</p>`,
     bulletPoints: JSON.stringify([
@@ -90,7 +90,7 @@ const defaultPages = [
     metaDescription: "Explore the 13 comprehensive practice areas of Y K Chaturvedi & Co. Chartered Accountants, including Audit, Direct Tax, GST, Business Setup, ROC, Project Finance, and Labour Codes.",
     focusKeyword: "CA Services Vasai",
     keywords: "Audit services, GST filing, Direct Tax, Company Registration, CMA Data, CA in Vasai",
-    canonicalUrl: "https://ykcassociates.in/services"
+    canonicalUrl: "https://ykchaturvedi.com/services"
   },
   {
     slug: "partners",
@@ -116,7 +116,7 @@ const defaultPages = [
     metaDescription: "Meet the partners of Y K Chaturvedi & Co.: CA Yogesh Kumar Chaturvedi (19+ years experience) and CA Saurabh Bhutada (12+ years experience, ICAI M. No. 176210). Direct partner supervision across all audit, tax, and advisory engagements.",
     focusKeyword: "CA Partners Vasai",
     keywords: "CA Yogesh Kumar Chaturvedi, CA Saurabh Bhutada, Chartered Accountants Palghar",
-    canonicalUrl: "https://ykcassociates.in/partners"
+    canonicalUrl: "https://ykchaturvedi.com/partners"
   },
   {
     slug: "team",
@@ -133,8 +133,8 @@ const defaultPages = [
     content: `<h2>The People Behind Our Reliable Execution</h2>
 <p>Behind every seamless audit sign-off and timely GST filing is our 15-member team of dedicated professionals. With rigorous internal training, standardized SOPs, and dual-layer review protocols, we ensure zero compliance oversights.</p>`,
     bulletPoints: JSON.stringify([
-      "2 Partners – Chartered Accountants (FCA & ACA)",
-      "1 Senior Manager – Gopeshwar Chaturvedi (15+ years experience)",
+      "2 Partners â€“ Chartered Accountants (FCA & ACA)",
+      "1 Senior Manager â€“ Gopeshwar Chaturvedi (15+ years experience)",
       "Experienced Accounts & Compliance Executives",
       "Dedicated Article Assistants undergoing ICAI practical training"
     ]),
@@ -142,7 +142,7 @@ const defaultPages = [
     metaDescription: "Explore the 15-member professional team at Y K Chaturvedi & Co., Chartered Accountants, spanning partners, senior manager Gopeshwar Chaturvedi, accounts executives, and article assistants across two Vasai offices.",
     focusKeyword: "CA Firm Team Vasai",
     keywords: "CA Firm Team, Chartered Accountants Staff, Gopeshwar Chaturvedi, Vasai CA Team",
-    canonicalUrl: "https://ykcassociates.in/team"
+    canonicalUrl: "https://ykchaturvedi.com/team"
   },
   {
     slug: "contact",
@@ -168,7 +168,7 @@ const defaultPages = [
     metaDescription: "Get in touch with Y K Chaturvedi & Co., Chartered Accountants. Head Office in Vasai West (Ambadi Road) and Branch Office in Vasai East (Infinity Square). Call +91 93221 65502 / +91 90491 02047.",
     focusKeyword: "Contact CA Vasai",
     keywords: "Contact CA, CA Office Vasai West, CA Office Vasai East, Chartered Accountants Contact",
-    canonicalUrl: "https://ykcassociates.in/contact"
+    canonicalUrl: "https://ykchaturvedi.com/contact"
   }
 ];
 
@@ -217,7 +217,7 @@ ${processHtml}`;
     metaDescription: `${service.shortDesc} Delivered under direct partner supervision by Y K Chaturvedi & Co. Chartered Accountants (FRN: 145633W).`.slice(0, 160),
     focusKeyword: `${service.title} Vasai`,
     keywords: `${service.title}, Chartered Accountants, CA Firm Vasai, Palghar, ICAI FRN 145633W`,
-    canonicalUrl: `https://ykcassociates.in/services/${service.slug}`,
+    canonicalUrl: `https://ykchaturvedi.com/services/${service.slug}`,
   };
 }
 
@@ -231,7 +231,7 @@ async function seedAllPages() {
       update: page,
       create: page,
     });
-    console.log(`✓ Main Page synced: ${page.title} (${page.slug})`);
+    console.log(`âœ“ Main Page synced: ${page.title} (${page.slug})`);
   }
 
   // 2. Remove obsolete temporary slugs if any
@@ -249,7 +249,7 @@ async function seedAllPages() {
       update: pageEntry,
       create: pageEntry,
     });
-    console.log(`✓ Service Page #${service.categoryNumber} synced: ${service.title} (/services/${service.slug})`);
+    console.log(`âœ“ Service Page #${service.categoryNumber} synced: ${service.title} (/services/${service.slug})`);
   }
 
   // 4. Backup all pages to data/pages-export.json
@@ -279,3 +279,4 @@ seedAllPages()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

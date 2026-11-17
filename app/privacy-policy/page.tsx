@@ -158,7 +158,7 @@ export default function PrivacyPolicyPage() {
               </p>
               <ul className="list-disc pl-6 space-y-1.5 text-sm sm:text-base text-slate-700">
                 <li><strong>No Advertising or Tracking Cookies:</strong> We do not deploy third-party advertising cookies, behavioural trackers, marketing pixels, or external web analytics tools (such as Google Analytics).</li>
-                <li><strong>Regulatory Local Storage:</strong> We use standard browser local storage (<code>localStorage</code>) solely for a single regulatory function: recording whether you have acknowledged our mandatory ICAI Regulatory Disclaimer popup (<code>ykcca_disclaimer_accepted</code>), so you are not repeatedly prompted on subsequent visits.</li>
+                <li><strong>Regulatory Local Storage:</strong> We use standard browser local storage (<code>localStorage</code>) solely for a single regulatory function: recording whether you have acknowledged our mandatory ICAI Regulatory Disclaimer popup (<code>ykc_disclaimer_accepted</code>), so you are not repeatedly prompted on subsequent visits.</li>
                 <li><strong>Administrative Session Cookies:</strong> Secure, encrypted session cookies are used solely within the password-protected internal administrative portal (<code>/admin</code>) for authorized staff authentication.</li>
               </ul>
             </div>
