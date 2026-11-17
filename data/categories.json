@@ -1,0 +1,32 @@
+[
+  {
+    "id": "cat_1",
+    "name": "Audit & Assurance",
+    "slug": "audit-assurance",
+    "createdAt": "2026-10-12T07:11:34.097Z"
+  },
+  {
+    "id": "cat_2",
+    "name": "Direct Taxation",
+    "slug": "direct-taxation",
+    "createdAt": "2026-10-12T07:11:34.097Z"
+  },
+  {
+    "id": "cat_3",
+    "name": "GST",
+    "slug": "gst",
+    "createdAt": "2026-10-12T07:11:34.097Z"
+  },
+  {
+    "id": "cat_4",
+    "name": "Business Setup",
+    "slug": "business-setup",
+    "createdAt": "2026-10-12T07:11:34.097Z"
+  },
+  {
+    "id": "cat_5",
+    "name": "Corporate Compliance",
+    "slug": "corporate-compliance",
+    "createdAt": "2026-10-12T07:11:34.097Z"
+  }
+]
