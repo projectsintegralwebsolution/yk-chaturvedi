@@ -40,6 +40,21 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.ykchaturvedi.com',
+          },
+        ],
+        destination: 'https://ykchaturvedi.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
