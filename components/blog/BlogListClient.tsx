@@ -38,8 +38,8 @@ interface BlogListClientProps {
 }
 
 export const BlogListClient: React.FC<BlogListClientProps> = ({
-  blogs,
-  categories,
+  blogs = [],
+  categories = [],
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -47,19 +47,22 @@ export const BlogListClient: React.FC<BlogListClientProps> = ({
   // Calculate read time
   const getReadTime = (content?: string, excerpt?: string) => {
     const text = (content || excerpt || "").replace(/<[^>]*>?/gm, "");
-    const words = text.trim().split(/\s+/).length;
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
     const minutes = Math.ceil(words / 200);
     return `${Math.max(1, minutes)} min read`;
   };
 
-  // Format date safely
-  const formatDate = (dateVal: string | Date) => {
+  // Format date safely and consistently across server and client
+  const formatDate = (dateVal?: string | Date | null) => {
+    if (!dateVal) return "Recent";
     try {
       const d = new Date(dateVal);
+      if (isNaN(d.getTime())) return "Recent";
       return d.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
+        timeZone: "UTC",
       });
     } catch {
       return "Recent";
@@ -68,18 +71,25 @@ export const BlogListClient: React.FC<BlogListClientProps> = ({
 
   // Filtered blogs
   const filteredBlogs = useMemo(() => {
+    if (!Array.isArray(blogs)) return [];
     return blogs.filter((blog) => {
+      if (!blog) return false;
+      const blogCat = (blog.category || "General").toLowerCase().trim();
       const matchesCat =
         selectedCategory === "all" ||
-        blog.category.toLowerCase() === selectedCategory.toLowerCase();
+        blogCat === selectedCategory.toLowerCase().trim();
 
       const q = searchQuery.toLowerCase().trim();
+      const title = (blog.title || "").toLowerCase();
+      const excerpt = (blog.excerpt || "").toLowerCase();
+      const author = (blog.author || "").toLowerCase();
+
       const matchesSearch =
         !q ||
-        blog.title.toLowerCase().includes(q) ||
-        blog.excerpt.toLowerCase().includes(q) ||
-        blog.author.toLowerCase().includes(q) ||
-        blog.category.toLowerCase().includes(q);
+        title.includes(q) ||
+        excerpt.includes(q) ||
+        author.includes(q) ||
+        blogCat.includes(q);
 
       return matchesCat && matchesSearch;
     });
@@ -99,9 +109,11 @@ export const BlogListClient: React.FC<BlogListClientProps> = ({
 
   // Category counts
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: blogs.length };
-    blogs.forEach((b) => {
-      const cat = b.category.toLowerCase();
+    const safeBlogs = Array.isArray(blogs) ? blogs : [];
+    const counts: Record<string, number> = { all: safeBlogs.length };
+    safeBlogs.forEach((b) => {
+      if (!b) return;
+      const cat = (b.category || "General").toLowerCase().trim();
       counts[cat] = (counts[cat] || 0) + 1;
     });
     return counts;
@@ -159,13 +171,15 @@ export const BlogListClient: React.FC<BlogListClientProps> = ({
             All Topics ({categoryCounts["all"] || 0})
           </button>
 
-          {categories.map((cat) => {
-            const count = categoryCounts[cat.name.toLowerCase()] || 0;
-            const isSelected = selectedCategory.toLowerCase() === cat.name.toLowerCase();
+          {(categories || []).map((cat) => {
+            if (!cat || !cat.name) return null;
+            const catNameLower = cat.name.toLowerCase().trim();
+            const count = categoryCounts[catNameLower] || 0;
+            const isSelected = selectedCategory.toLowerCase().trim() === catNameLower;
             return (
               <button
-                key={cat.id || cat.slug}
-                onClick={() => setSelectedCategory(cat.name.toLowerCase())}
+                key={cat.id || cat.slug || cat.name}
+                onClick={() => setSelectedCategory(catNameLower)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0 ${
                   isSelected
                     ? "bg-navy-950 text-white shadow-sm"

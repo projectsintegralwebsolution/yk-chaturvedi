@@ -134,6 +134,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         month: "long",
         day: "numeric",
         year: "numeric",
+        timeZone: "UTC",
       })
     : "Recently Published";
 
@@ -425,6 +426,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                               month: "short",
                               day: "numeric",
                               year: "numeric",
+                              timeZone: "UTC",
                             })
                           : ""}
                       </span>

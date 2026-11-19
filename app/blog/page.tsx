@@ -24,21 +24,50 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogListingPage() {
-  const [blogs, categories] = await Promise.all([
-    prisma.blog.findMany({
-      where: {
-        status: "Published",
-      },
-      orderBy: {
-        publishedAt: "desc",
-      },
-    }),
-    prisma.category.findMany({
-      orderBy: {
-        name: "asc",
-      },
-    }),
-  ]);
+  let rawBlogs: any[] = [];
+  let rawCategories: any[] = [];
+
+  try {
+    const [blogsData, categoriesData] = await Promise.all([
+      prisma.blog.findMany({
+        where: {
+          status: "Published",
+        },
+        orderBy: {
+          publishedAt: "desc",
+        },
+      }),
+      prisma.category.findMany({
+        orderBy: {
+          name: "asc",
+        },
+      }),
+    ]);
+    rawBlogs = blogsData;
+    rawCategories = categoriesData;
+  } catch (error) {
+    console.warn("[BlogListingPage] DB error, using empty fallback:", error);
+  }
+
+  // Serialize dates to ISO strings to prevent client-server hydration mismatch
+  const blogs = rawBlogs.map((b) => ({
+    id: b.id,
+    title: b.title || "Untitled Article",
+    slug: b.slug,
+    category: b.category || "General",
+    excerpt: b.excerpt || "",
+    featuredImage: b.featuredImage || "/images/ca-logo-mark.jpg",
+    author: b.author || "CA Partner",
+    publishedAt: b.publishedAt ? new Date(b.publishedAt).toISOString() : new Date().toISOString(),
+    status: b.status || "Published",
+    content: b.content || "",
+  }));
+
+  const categories = rawCategories.map((c) => ({
+    id: c.id || c.slug,
+    name: c.name || "General",
+    slug: c.slug || "general",
+  }));
 
   return (
     <div className="bg-slate-50 min-h-screen">
