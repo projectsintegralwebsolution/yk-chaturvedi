@@ -1,9 +1,9 @@
 import React from "react";
 import type { Metadata } from "next";
-import prisma from "@/lib/prisma";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { BlogListClient } from "@/components/blog/BlogListClient";
+import { getCmsBlogs, getCmsCategories } from "@/lib/cmsContent";
 
 export const dynamic = "force-dynamic";
 
@@ -24,30 +24,10 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogListingPage() {
-  let rawBlogs: any[] = [];
-  let rawCategories: any[] = [];
-
-  try {
-    const [blogsData, categoriesData] = await Promise.all([
-      prisma.blog.findMany({
-        where: {
-          status: "Published",
-        },
-        orderBy: {
-          publishedAt: "desc",
-        },
-      }),
-      prisma.category.findMany({
-        orderBy: {
-          name: "asc",
-        },
-      }),
-    ]);
-    rawBlogs = blogsData;
-    rawCategories = categoriesData;
-  } catch (error) {
-    console.warn("[BlogListingPage] DB error, using empty fallback:", error);
-  }
+  const [rawBlogs, rawCategories] = await Promise.all([
+    getCmsBlogs(),
+    getCmsCategories(),
+  ]);
 
   // Serialize dates to ISO strings to prevent client-server hydration mismatch
   const blogs = rawBlogs.map((b) => ({

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { syncBlogsToJson } from "@/lib/cmsContent";
 
 export async function GET() {
   if (!isAdminAuthenticated()) {
@@ -78,6 +79,8 @@ export async function POST(request: Request) {
         canonicalUrl: canonicalUrl || "",
       },
     });
+
+    await syncBlogsToJson();
 
     return NextResponse.json({ success: true, blog }, { status: 201 });
   } catch (error: any) {

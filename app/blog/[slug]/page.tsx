@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import prisma from "@/lib/prisma";
+import { getCmsBlogBySlug, getCmsBlogs } from "@/lib/cmsContent";
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import {
@@ -34,12 +34,7 @@ interface BlogPostPageProps {
 export async function generateMetadata({
   params,
 }: BlogPostPageProps): Promise<Metadata> {
-  const blog = await prisma.blog.findFirst({
-    where: {
-      slug: params.slug,
-      status: "Published",
-    },
-  });
+  const blog = await getCmsBlogBySlug(params.slug);
 
   if (!blog) {
     return {
@@ -88,40 +83,24 @@ export async function generateMetadata({
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const blog = await prisma.blog.findFirst({
-    where: {
-      slug: params.slug,
-      status: "Published",
-    },
-  });
+  const blog = await getCmsBlogBySlug(params.slug);
 
   if (!blog) {
     notFound();
   }
 
   // Fetch related blogs in same category (excluding current), max 3
-  let relatedBlogs = await prisma.blog.findMany({
-    where: {
-      status: "Published",
-      category: blog.category,
-      id: { not: blog.id },
-    },
-    orderBy: { publishedAt: "desc" },
-    take: 3,
-  });
+  const allBlogs = await getCmsBlogs();
+  let relatedBlogs = allBlogs.filter(
+    (b: any) => b.category === blog.category && b.id !== blog.id && b.slug !== blog.slug
+  ).slice(0, 3);
 
   // If fewer than 3 in same category, backfill with recent published
   if (relatedBlogs.length < 3) {
-    const additional = await prisma.blog.findMany({
-      where: {
-        status: "Published",
-        id: {
-          notIn: [blog.id, ...relatedBlogs.map((r) => r.id)],
-        },
-      },
-      orderBy: { publishedAt: "desc" },
-      take: 3 - relatedBlogs.length,
-    });
+    const existingIds = new Set([blog.id, blog.slug, ...relatedBlogs.map((r: any) => r.id), ...relatedBlogs.map((r: any) => r.slug)]);
+    const additional = allBlogs
+      .filter((b: any) => !existingIds.has(b.id) && !existingIds.has(b.slug))
+      .slice(0, 3 - relatedBlogs.length);
     relatedBlogs = [...relatedBlogs, ...additional];
   }
 

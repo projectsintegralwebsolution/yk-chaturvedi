@@ -123,3 +123,98 @@ export async function getCmsTeam() {
   }
   return [firmData.keyPersonnel];
 }
+
+export async function getCmsBlogs(): Promise<any[]> {
+  try {
+    const items = await prisma.blog.findMany({
+      where: { status: "Published" },
+      orderBy: { publishedAt: "desc" },
+    });
+    if (items && items.length > 0) {
+      return items;
+    }
+  } catch (error) {
+    console.warn("[getCmsBlogs] Fallback to static data/blogs.json:", error);
+  }
+
+  // Guaranteed fallback to data/blogs.json (which is committed to Git)
+  try {
+    const fs = await import("fs");
+    const path = await import("path");
+    const blogsFile = path.join(process.cwd(), "data", "blogs.json");
+    if (fs.existsSync(blogsFile)) {
+      const raw = fs.readFileSync(blogsFile, "utf8");
+      const list = JSON.parse(raw);
+      return list.filter((b: any) => b.status === "Published");
+    }
+  } catch (fsErr) {
+    console.error("[getCmsBlogs] Error reading data/blogs.json:", fsErr);
+  }
+  return [];
+}
+
+export async function getCmsBlogBySlug(slug: string): Promise<any | null> {
+  try {
+    const item = await prisma.blog.findFirst({
+      where: { slug, status: "Published" },
+    });
+    if (item) return item;
+  } catch (error) {
+    console.warn(`[getCmsBlogBySlug] Fallback for ${slug}:`, error);
+  }
+
+  try {
+    const fs = await import("fs");
+    const path = await import("path");
+    const blogsFile = path.join(process.cwd(), "data", "blogs.json");
+    if (fs.existsSync(blogsFile)) {
+      const raw = fs.readFileSync(blogsFile, "utf8");
+      const list = JSON.parse(raw);
+      return list.find((b: any) => b.slug === slug && b.status === "Published") || null;
+    }
+  } catch (fsErr) {
+    console.error(`[getCmsBlogBySlug] Error reading data/blogs.json for ${slug}:`, fsErr);
+  }
+  return null;
+}
+
+export async function getCmsCategories(): Promise<any[]> {
+  try {
+    const items = await prisma.category.findMany({
+      orderBy: { name: "asc" },
+    });
+    if (items && items.length > 0) return items;
+  } catch (error) {
+    console.warn("[getCmsCategories] Fallback to static data/categories.json:", error);
+  }
+
+  try {
+    const fs = await import("fs");
+    const path = await import("path");
+    const catFile = path.join(process.cwd(), "data", "categories.json");
+    if (fs.existsSync(catFile)) {
+      const raw = fs.readFileSync(catFile, "utf8");
+      return JSON.parse(raw);
+    }
+  } catch (fsErr) {
+    console.error("[getCmsCategories] Error reading data/categories.json:", fsErr);
+  }
+  return [];
+}
+
+export async function syncBlogsToJson(): Promise<void> {
+  try {
+    const blogs = await prisma.blog.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    if (blogs && blogs.length > 0) {
+      const fs = await import("fs");
+      const path = await import("path");
+      const blogsFile = path.join(process.cwd(), "data", "blogs.json");
+      fs.writeFileSync(blogsFile, JSON.stringify(blogs, null, 2), "utf8");
+    }
+  } catch (err) {
+    console.error("[syncBlogsToJson] Error syncing blogs to data/blogs.json:", err);
+  }
+}
+

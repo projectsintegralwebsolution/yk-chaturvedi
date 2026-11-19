@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/auth";
+import { syncBlogsToJson } from "@/lib/cmsContent";
 
 interface Params {
   params: {
@@ -83,6 +84,8 @@ export async function PUT(request: Request, { params }: Params) {
       },
     });
 
+    await syncBlogsToJson();
+
     return NextResponse.json({ success: true, blog: updatedBlog });
   } catch (error: any) {
     return NextResponse.json(
@@ -101,6 +104,8 @@ export async function DELETE(request: Request, { params }: Params) {
     await prisma.blog.delete({
       where: { id: params.id },
     });
+
+    await syncBlogsToJson();
 
     return NextResponse.json({ success: true, message: "Blog deleted successfully" });
   } catch (error) {
