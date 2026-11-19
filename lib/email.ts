@@ -165,7 +165,7 @@ async function sendClientNotification(data: EnquiryData, timestampStr: string) {
   const textContent = `
 Dear Partners & Team,
 
-A new client consultation enquiry has been submitted through the firm's website (ykcca.com).
+A new client consultation enquiry has been submitted through the firm's website (ykchaturvedi.com).
 
 --- ENQUIRY DETAILS ---
 Full Name: ${data.name}
@@ -308,7 +308,7 @@ Chartered Accountants
 FRN: 145633W | GSTIN: 27AACFY3275B1Z9
 Offices: Vasai (West) & Vasai (East), Dist. Palghar
 Phone: +91 93221 65502 / +91 90491 02047
-Website: https://ykcca.com
+Website: https://ykchaturvedi.com
 `;
 
   const htmlContent = `

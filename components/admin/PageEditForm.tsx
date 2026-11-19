@@ -836,7 +836,7 @@ export const PageEditForm: React.FC<PageEditFormProps> = ({
                   type="text"
                   value={formData.canonicalUrl}
                   onChange={(e) => setFormData({ ...formData, canonicalUrl: e.target.value })}
-                  placeholder="https://ykcassociates.in/about"
+                  placeholder="https://ykchaturvedi.com/about"
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-navy-900/10"
                 />
               </div>
@@ -872,7 +872,7 @@ export const PageEditForm: React.FC<PageEditFormProps> = ({
                 <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs space-y-1">
                   <div className="flex items-center gap-2 text-xs text-slate-600">
                     <span className="font-bold text-navy-950">Y K Chaturvedi &amp; Co.</span>
-                    <span className="text-slate-400">https://ykcassociates.in{formData.path}</span>
+                    <span className="text-slate-400">https://ykchaturvedi.com{formData.path}</span>
                   </div>
                   <h4 className="text-blue-700 font-medium text-base hover:underline cursor-pointer">
                     {previewTitle}

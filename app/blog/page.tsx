@@ -16,7 +16,10 @@ export const metadata: Metadata = {
     description:
       "Statutory insights, tax analysis, and regulatory updates curated by Chartered Accountants.",
     type: "website",
-    url: "https://ykcca.com/blog",
+    url: "https://ykchaturvedi.com/blog",
+  },
+  alternates: {
+    canonical: "https://ykchaturvedi.com/blog",
   },
 };
 

@@ -59,6 +59,9 @@ export const metadata: Metadata = {
     siteName: "Y K Chaturvedi & Co. Chartered Accountants",
     images: [{ url: "/images/ca-logo-mark.jpg" }],
   },
+  alternates: {
+    canonical: "https://ykchaturvedi.com",
+  },
   robots: {
     index: true,
     follow: true,

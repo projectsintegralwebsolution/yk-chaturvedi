@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { ShieldAlert, CheckCircle2 } from "lucide-react";
 
-const STORAGE_KEY = "ykcca_disclaimer_accepted";
+const STORAGE_KEY = "ykc_disclaimer_accepted";
 
 export const DisclaimerPopup: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

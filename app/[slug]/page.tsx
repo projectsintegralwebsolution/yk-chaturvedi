@@ -28,7 +28,7 @@ export async function generateMetadata({
     title: page.metaTitle || `${page.title} | Y K Chaturvedi & Co.`,
     description: page.metaDescription || undefined,
     alternates: {
-      canonical: page.canonicalUrl || `https://ykcassociates.in/${params.slug}`,
+      canonical: page.canonicalUrl || `https://ykchaturvedi.com/${params.slug}`,
     },
     openGraph: {
       title: page.metaTitle || page.title,

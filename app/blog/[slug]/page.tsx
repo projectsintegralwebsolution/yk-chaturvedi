@@ -57,13 +57,13 @@ export async function generateMetadata({
     description: metaDescription,
     keywords: blog.focusKeyword || undefined,
     alternates: {
-      canonical: blog.canonicalUrl || `https://ykcca.com/blog/${blog.slug}`,
+      canonical: blog.canonicalUrl || `https://ykchaturvedi.com/blog/${blog.slug}`,
     },
     openGraph: {
       title: metaTitle,
       description: metaDescription,
       type: "article",
-      url: `https://ykcca.com/blog/${blog.slug}`,
+      url: `https://ykchaturvedi.com/blog/${blog.slug}`,
       images: [
         {
           url: blog.featuredImage,
@@ -157,15 +157,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     publisher: {
       "@type": "AccountingService",
       name: "Y K Chaturvedi & Co.",
-      url: "https://ykcca.com",
+      url: "https://ykchaturvedi.com",
       logo: {
         "@type": "ImageObject",
-        url: "https://ykcca.com/logo.png",
+        url: "https://ykchaturvedi.com/images/ca-logo-mark.jpg",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://ykcca.com/blog/${blog.slug}`,
+      "@id": `https://ykchaturvedi.com/blog/${blog.slug}`,
     },
   };
 
@@ -177,19 +177,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://ykcca.com",
+        item: "https://ykchaturvedi.com",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Blog",
-        item: "https://ykcca.com/blog",
+        item: "https://ykchaturvedi.com/blog",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: blog.title,
-        item: `https://ykcca.com/blog/${blog.slug}`,
+        item: `https://ykchaturvedi.com/blog/${blog.slug}`,
       },
     ],
   };
