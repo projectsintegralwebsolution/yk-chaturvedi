@@ -21,6 +21,7 @@ import { CTASection } from "@/components/CTASection";
 import { ContactForm } from "@/components/ContactForm";
 import { servicesData } from "@/data/servicesData";
 import { firmData } from "@/data/firmData";
+import { getCmsServices, getCmsPartners } from "@/lib/cmsContent";
 
 export const metadata: Metadata = {
   title: {
@@ -30,9 +31,10 @@ export const metadata: Metadata = {
     "Y K Chaturvedi & Co. (FRN: 145633W, GSTIN: 27AACFY3275B1Z9) is a premier Chartered Accountancy partnership firm with offices in Vasai West & Vasai East. Expert audit, taxation, GST, ROC, project finance, and advisory under direct partner supervision.",
 };
 
-export default function HomePage() {
-  // Display 6 key practice areas on the homepage
-  const homepageServices = servicesData.slice(0, 6);
+export default async function HomePage() {
+  const allServices = await getCmsServices();
+  const homepageServices = allServices.slice(0, 6);
+  const partners = await getCmsPartners();
 
   return (
     <div className="space-y-0">
@@ -213,7 +215,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {firmData.partners.map((partner) => (
+            {partners.map((partner) => (
               <PartnerCard key={partner.name} partner={partner} isHomePage={true} />
             ))}
           </div>

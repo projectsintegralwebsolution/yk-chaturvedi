@@ -39,17 +39,95 @@ model AdminUser {
   username  String   @unique
   password  String
   name      String
+  role      String   @default("Super Admin") // "Super Admin" | "Content Manager"
   createdAt DateTime @default(now())
 }
 
 model Enquiry {
+  id         String   @id @default(cuid())
+  name       String
+  company    String?
+  phone      String
+  email      String
+  service    String
+  office     String?
+  message    String
+  status     String   @default("New") // "New" | "In Progress" | "Contacted" | "Closed"
+  adminNotes String?
+  createdAt  DateTime @default(now())
+}
+
+model ServiceItem {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  title             String
+  categoryNumber    Int      @default(1)
+  shortDesc         String
+  heroTagline       String
+  bannerImage       String
+  iconName          String   @default("FileText")
+  inclusions        String   // JSON string array
+  strategicBenefits String   // JSON string of [{title, desc}]
+  processSteps      String   // JSON string of [{step, title, desc}]
+  faqs              String   // JSON string of [{question, answer}]
+  relatedSlugs      String   // JSON string array
+  displayOrder      Int      @default(0)
+  isActive          Boolean  @default(true)
+  metaTitle         String?
+  metaDescription   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model PartnerProfile {
+  id              String   @id @default(cuid())
+  name            String
+  designation     String
+  qualification   String
+  membershipNo    String?
+  experienceYears String
+  summary         String
+  expertise       String   // JSON string array
+  pastRoles       String?  // JSON string array
+  phones          String   // JSON string array
+  email           String
+  image           String?
+  displayOrder    Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model TeamMemberProfile {
+  id              String   @id @default(cuid())
+  name            String
+  designation     String
+  qualification   String
+  department      String   @default("Audit & Taxation")
+  experienceYears String
+  specialization  String?
+  summary         String?
+  phones          String?  // JSON string array
+  displayOrder    Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SiteSetting {
   id        String   @id @default(cuid())
-  name      String
-  company   String?
-  phone     String
-  email     String
-  service   String
-  office    String?
-  message   String
+  key       String   @unique // e.g. "firm_info", "homepage", "about", "navigation", "footer", "seo"
+  value     String   // JSON string
+  updatedAt DateTime @updatedAt
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  url       String   @unique
+  fileName  String
+  fileType  String
+  fileSize  Int
+  altText   String?
+  folder    String   @default("general")
   createdAt DateTime @default(now())
 }

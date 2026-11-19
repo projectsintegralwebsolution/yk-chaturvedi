@@ -20,6 +20,7 @@ import { CTASection } from "@/components/CTASection";
 import { DynamicIcon } from "@/components/DynamicIcon";
 import { servicesData, ServiceDetail } from "@/data/servicesData";
 import { firmData } from "@/data/firmData";
+import { getCmsServiceBySlug, getCmsServices } from "@/lib/cmsContent";
 
 interface ServicePageProps {
   params: {
@@ -36,7 +37,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: ServicePageProps): Promise<Metadata> {
-  const service = servicesData.find((s) => s.slug === params.slug);
+  const service = (await getCmsServiceBySlug(params.slug)) || servicesData.find((s) => s.slug === params.slug);
   if (!service) {
     return {
       title: "Service Not Found",
@@ -54,16 +55,17 @@ export async function generateMetadata({
   };
 }
 
-export default function ServiceDetailPage({ params }: ServicePageProps) {
-  const service = servicesData.find((s) => s.slug === params.slug);
+export default async function ServiceDetailPage({ params }: ServicePageProps) {
+  const service = (await getCmsServiceBySlug(params.slug)) || servicesData.find((s) => s.slug === params.slug);
 
   if (!service) {
     notFound();
   }
 
   // Related services lookup
-  const relatedServices = servicesData.filter((s) =>
-    service.relatedSlugs.includes(s.slug)
+  const allServices = await getCmsServices();
+  const relatedServices = allServices.filter((s) =>
+    service.relatedSlugs?.includes(s.slug)
   );
 
   return (
@@ -207,7 +209,7 @@ export default function ServiceDetailPage({ params }: ServicePageProps) {
                     Speak directly with a partner from our Vasai offices.
                   </p>
                 </div>
-                <ContactForm defaultService={service.title} />
+                <ContactForm defaultService={service.title} isServicePage={true} />
               </div>
 
               {/* Direct Partner Contacts */}

@@ -5,7 +5,7 @@ import { ShieldCheck, ArrowRight, Award } from "lucide-react";
 import { PageBanner } from "@/components/PageBanner";
 import { ServiceCard } from "@/components/ServiceCard";
 import { CTASection } from "@/components/CTASection";
-import { servicesData } from "@/data/servicesData";
+import { getCmsServices } from "@/lib/cmsContent";
 
 export const metadata: Metadata = {
   title: "Services & Practice Areas | Audit, Tax, GST, ROC, Finance",
@@ -13,7 +13,9 @@ export const metadata: Metadata = {
     "Explore the 12 comprehensive practice areas of Y K Chaturvedi & Co. Chartered Accountants, including Audit, Direct Tax, GST, Business Setup, ROC, Project Finance, and Labour Codes.",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await getCmsServices();
+
   return (
     <div>
       {/* 1. Inner Page Banner */}
@@ -22,7 +24,7 @@ export default function ServicesPage() {
         subtitle="Comprehensive financial, taxation, compliance and advisory solutions delivered under direct partner supervision."
         breadcrumbs={[{ label: "Services" }]}
         bgImage="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1920&auto=format&fit=crop"
-        badge="12 Specialized Practice Areas"
+        badge={`${services.length} Specialized Practice Areas`}
       />
 
       {/* 2. Practice Overview Introduction */}
@@ -43,7 +45,7 @@ export default function ServicesPage() {
 
           {/* 12-Service Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {servicesData.map((service) => (
+            {services.map((service) => (
               <ServiceCard key={service.slug} service={service} />
             ))}
           </div>

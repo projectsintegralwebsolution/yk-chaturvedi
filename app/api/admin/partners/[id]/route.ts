@@ -1,0 +1,96 @@
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { isAdminAuthenticated } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  if (!isAdminAuthenticated()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const partner = await prisma.partnerProfile.findUnique({
+      where: { id: params.id },
+    });
+    if (!partner) {
+      return NextResponse.json({ error: "Partner not found" }, { status: 404 });
+    }
+    return NextResponse.json({ partner });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  if (!isAdminAuthenticated()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const data = await request.json();
+    const updateData: any = {};
+    const fields = [
+      "name",
+      "designation",
+      "qualification",
+      "membershipNo",
+      "experienceYears",
+      "summary",
+      "expertise",
+      "pastRoles",
+      "phones",
+      "email",
+      "image",
+      "displayOrder",
+      "isActive",
+    ];
+
+    for (const f of fields) {
+      if (data[f] !== undefined) {
+        if (["expertise", "pastRoles", "phones"].includes(f)) {
+          updateData[f] = typeof data[f] === "string" ? data[f] : JSON.stringify(data[f]);
+        } else if (f === "displayOrder") {
+          updateData[f] = Number(data[f]);
+        } else if (f === "isActive") {
+          updateData[f] = Boolean(data[f]);
+        } else {
+          updateData[f] = data[f];
+        }
+      }
+    }
+
+    const updated = await prisma.partnerProfile.update({
+      where: { id: params.id },
+      data: updateData,
+    });
+
+    return NextResponse.json({ success: true, partner: updated });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  if (!isAdminAuthenticated()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    await prisma.partnerProfile.delete({
+      where: { id: params.id },
+    });
+    return NextResponse.json({ success: true, message: "Partner deleted successfully" });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

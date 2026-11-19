@@ -16,6 +16,7 @@ import {
 import { PageBanner } from "@/components/PageBanner";
 import { CTASection } from "@/components/CTASection";
 import { firmData } from "@/data/firmData";
+import { getCmsTeam } from "@/lib/cmsContent";
 
 export const metadata: Metadata = {
   title: "Our Team | 15 Professionals. One Integrated Team.",
@@ -23,7 +24,9 @@ export const metadata: Metadata = {
     "Explore the 15-member professional team at Y K Chaturvedi & Co., Chartered Accountants, spanning partners, senior manager Gopeshwar Chaturvedi, accounts executives, and article assistants across two Vasai offices.",
 };
 
-export default function TeamPage() {
+export default async function TeamPage() {
+  const teamList = await getCmsTeam();
+  const keyPersonnel = teamList[0] || firmData.keyPersonnel;
   const teamDivisions = [
     {
       title: "Partnership & Statutory Leadership",
@@ -218,19 +221,19 @@ export default function TeamPage() {
               </div>
               <div>
                 <h3 className="text-2xl sm:text-3xl font-heading font-bold text-white">
-                  {firmData.keyPersonnel.name}
+                  {keyPersonnel.name}
                 </h3>
                 <div className="text-sm font-semibold text-gold-400 mt-0.5">
-                  {firmData.keyPersonnel.designation} • {firmData.keyPersonnel.qualification}
+                  {keyPersonnel.designation} • {keyPersonnel.qualification}
                 </div>
                 <div className="text-xs text-slate-300 mt-1">
-                  15+ years overall experience • 8 years specializing in GST Audit & GST Refunds
+                  {keyPersonnel.experienceYears || "15+ years overall experience"} • {keyPersonnel.specialization || "8 years specializing in GST Audit & GST Refunds"}
                 </div>
               </div>
             </div>
 
             <p className="text-sm text-slate-300 leading-relaxed mb-6">
-              Gopeshwar Chaturvedi holds a Master of Commerce degree and brings more than 15 years of comprehensive accounts and taxation experience. He has particular expertise in GST refund claims under Section 54 of the CGST Act (including export refunds and inverted duty structure claims). As Senior Manager, he supervises the firm’s GST audit and refund assignments and coordinates the execution team across both offices.
+              {keyPersonnel.summary || "Gopeshwar Chaturvedi holds a Master of Commerce degree and brings more than 15 years of comprehensive accounts and taxation experience. He has particular expertise in GST refund claims under Section 54 of the CGST Act (including export refunds and inverted duty structure claims). As Senior Manager, he supervises the firm’s GST audit and refund assignments and coordinates the execution team across both offices."}
             </p>
 
             <div className="pt-6 border-t border-navy-800 flex flex-wrap items-center justify-between gap-4 text-xs">
@@ -238,7 +241,7 @@ export default function TeamPage() {
                 Direct Contact:
               </div>
               <div className="flex flex-wrap gap-4">
-                {firmData.keyPersonnel.phones.map((phone) => (
+                {(keyPersonnel.phones || []).map((phone: string) => (
                   <a
                     key={phone}
                     href={`tel:${phone.replace(/\s+/g, "")}`}

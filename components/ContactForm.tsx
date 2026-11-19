@@ -9,12 +9,14 @@ interface ContactFormProps {
   defaultService?: string;
   isModal?: boolean;
   onSuccess?: () => void;
+  isServicePage?: boolean;
 }
 
 export const ContactForm: React.FC<ContactFormProps> = ({
   defaultService = "",
   isModal = false,
   onSuccess,
+  isServicePage = false,
 }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -244,7 +246,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({
 
       <div className="text-xs text-center text-slate-500 pt-1 space-y-1">
         <p>
-          Direct Partner Supervision. All client matters treated with utmost professional confidentiality.
+          {isServicePage ? "" : "Direct Partner Supervision. "}All client matters treated with utmost professional confidentiality.
         </p>
         <p>
           Please review our{" "}

@@ -13,6 +13,7 @@ import { PageBanner } from "@/components/PageBanner";
 import { PartnerCard } from "@/components/PartnerCard";
 import { CTASection } from "@/components/CTASection";
 import { firmData } from "@/data/firmData";
+import { getCmsPartners } from "@/lib/cmsContent";
 
 export const metadata: Metadata = {
   title: "Partners | CA Yogesh Kumar Chaturvedi & CA Saurabh Bhutada",
@@ -20,7 +21,9 @@ export const metadata: Metadata = {
     "Meet the partners of Y K Chaturvedi & Co.: CA Yogesh Kumar Chaturvedi (19+ years experience) and CA Saurabh Bhutada (12+ years experience, ICAI M. No. 176210). Direct partner supervision across all audit, tax, and advisory engagements.",
 };
 
-export default function PartnersPage() {
+export default async function PartnersPage() {
+  const partners = await getCmsPartners();
+
   return (
     <div>
       {/* 1. Inner Page Banner */}
@@ -50,7 +53,7 @@ export default function PartnersPage() {
 
           {/* Partner Cards Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {firmData.partners.map((partner) => (
+            {partners.map((partner) => (
               <PartnerCard key={partner.name} partner={partner} />
             ))}
           </div>
